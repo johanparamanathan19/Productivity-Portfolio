@@ -1,0 +1,102 @@
+/* ============================================================
+   Design tokens
+   Shared by every page. Each theme redefines the full palette,
+   so components only ever reference the semantic variables
+   below (--accent, --surface, --text, …) and never raw colors.
+   ============================================================ */
+
+:root {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --shadow-card: 0 24px 60px -20px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 8px 24px -10px rgba(0, 0, 0, 0.28);
+
+  /* Contrast-safe ink for text sitting on an --accent fill.
+     Light themes override this to white. */
+  --on-accent: #10201a;
+}
+
+/* ---------- Themes ------------------------------------------
+   --accent drives every primary action, ring, and glow.
+   Add a theme here and register it in assets/js/theme.js. */
+
+[data-theme='forest'] {
+  --bg-0: #10201a; --bg-1: #1a3226; --bg-2: #24463a;
+  --blob-1: #2f7d5b; --blob-2: #4aa07a; --blob-3: #7bc4a0;
+  --accent: #58c896; --accent-2: #9be6bf;
+  --text: #eaf5ee; --text-dim: #a9c4b6;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.10);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --track: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='sakura'] {
+  --bg-0: #2a1a24; --bg-1: #3d2230; --bg-2: #522b3f;
+  --blob-1: #e06a94; --blob-2: #f4a6c0; --blob-3: #ffd0dd;
+  --accent: #ff8fb0; --accent-2: #ffc2d4;
+  --text: #fbeef2; --text-dim: #d8b3c1;
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-2: rgba(255, 255, 255, 0.12);
+  --stroke: rgba(255, 255, 255, 0.14);
+  --track: rgba(255, 255, 255, 0.09);
+  --on-accent: #40202c;
+}
+
+[data-theme='midnight'] {
+  --bg-0: #0b1020; --bg-1: #141c33; --bg-2: #1e2a4a;
+  --blob-1: #4f6bff; --blob-2: #7d8bff; --blob-3: #a99bff;
+  --accent: #7b8cff; --accent-2: #c0b3ff;
+  --text: #eef1ff; --text-dim: #a9b1d6;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.10);
+  --stroke: rgba(255, 255, 255, 0.12);
+  --track: rgba(255, 255, 255, 0.08);
+  --on-accent: #ffffff;
+}
+
+[data-theme='sunset'] {
+  --bg-0: #2a1512; --bg-1: #3f1f18; --bg-2: #572a1c;
+  --blob-1: #ff7a4d; --blob-2: #ffb057; --blob-3: #ffd98a;
+  --accent: #ff9a5a; --accent-2: #ffd08a;
+  --text: #fff1e8; --text-dim: #dab6a2;
+  --surface: rgba(255, 255, 255, 0.07);
+  --surface-2: rgba(255, 255, 255, 0.12);
+  --stroke: rgba(255, 255, 255, 0.14);
+  --track: rgba(255, 255, 255, 0.09);
+  --on-accent: #3a1a10;
+}
+
+[data-theme='ocean'] {
+  --bg-0: #06171f; --bg-1: #0c2a35; --bg-2: #123f4d;
+  --blob-1: #1fb0c9; --blob-2: #4fd6de; --blob-3: #9af0e6;
+  --accent: #38d0d6; --accent-2: #9af0e6;
+  --text: #e6f8fa; --text-dim: #9dc4cc;
+  --surface: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.11);
+  --stroke: rgba(255, 255, 255, 0.13);
+  --track: rgba(255, 255, 255, 0.08);
+  --on-accent: #06222b;
+}
+
+[data-theme='lavender'] {
+  --bg-0: #f4f1fb; --bg-1: #eae4f7; --bg-2: #ded3f0;
+  --blob-1: #b8a4f0; --blob-2: #d3c3f7; --blob-3: #efe6ff;
+  --accent: #8b6be6; --accent-2: #b79bff;
+  --text: #2e2545; --text-dim: #6f6390;
+  --surface: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.75);
+  --stroke: rgba(90, 70, 140, 0.14);
+  --track: rgba(90, 70, 140, 0.12);
+  --shadow-card: 0 24px 60px -22px rgba(90, 70, 140, 0.4);
+  --shadow-soft: 0 8px 24px -10px rgba(90, 70, 140, 0.28);
+  --on-accent: #ffffff;
+}
