@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2f7d5b" />
+  <meta name="robots" content="noindex" />
+  <title>Not found — Johan Paramanathan</title>
+
+  <!--
+    GitHub Pages serves this file for any missing path, at any depth, so
+    relative asset URLs cannot be relied on. The styles below are therefore
+    inlined rather than pulled from assets/css/.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-0: #10201a; --bg-1: #1a3226; --bg-2: #24463a;
+      --accent: #58c896; --accent-2: #9be6bf;
+      --text: #eaf5ee; --text-dim: #a9c4b6;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(120% 120% at 50% -10%, var(--bg-2), transparent 60%),
+        linear-gradient(160deg, var(--bg-0), var(--bg-1));
+      -webkit-font-smoothing: antialiased;
+    }
+    main { max-width: 460px; text-align: center; animation: rise 0.7s var(--ease-out) both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+    .code {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(72px, 18vw, 120px);
+      font-weight: 300;
+      line-height: 1;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    h1 { margin: 8px 0 12px; font-family: 'Fraunces', Georgia, serif; font-size: 26px; font-weight: 400; }
+    p { margin: 0 0 28px; color: var(--text-dim); font-size: 15px; line-height: 1.65; }
+    a {
+      display: inline-grid;
+      place-items: center;
+      height: 52px;
+      padding: 0 26px;
+      border-radius: 999px;
+      color: #10201a;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 12px 30px -8px var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 0.25s var(--ease-out);
+    }
+    a:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="code" aria-hidden="true">404</div>
+    <h1>This page wandered off</h1>
+    <p>The link may be out of date, or the tool may have moved. The rest of the collection is still where you left it.</p>
+    <a id="home" href="/">Back to the tools</a>
+  </main>
+
+  <script>
+    // On a github.io project site the root is /<repo>/, not /.
+    (function () {
+      var parts = location.pathname.split('/').filter(Boolean);
+      if (location.hostname.endsWith('github.io') && parts.length) {
+        document.getElementById('home').href = '/' + parts[0] + '/';
+      }
+    })();
+  </script>
+</body>
+</html>
