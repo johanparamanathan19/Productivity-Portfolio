@@ -72,10 +72,10 @@ function renderWeekChart(container) {
 
 const GROWTH_STAGES = ['🌱', '🌿', '🌳'];
 
-function renderGrove(container, count) {
+function renderGarden(container, count) {
   if (!count) {
     const hint = document.createElement('span');
-    hint.className = 'grove-empty';
+    hint.className = 'garden-empty';
     hint.textContent = 'No sessions yet today — plant your first 🌱';
     container.replaceChildren(hint);
     return;
@@ -106,5 +106,5 @@ export function renderStats(refs, focusMinutes) {
   refs.total.textContent = String(stats.total || 0);
 
   renderWeekChart(refs.weekChart);
-  renderGrove(refs.grove, today);
+  renderGarden(refs.garden, today);
 }

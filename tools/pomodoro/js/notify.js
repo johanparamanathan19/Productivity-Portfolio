@@ -20,7 +20,7 @@ export function requestPermission() {
 export function notify(body) {
   if (!supported() || Notification.permission !== 'granted') return;
   try {
-    new Notification('Grove', { body, icon: ICON, silent: true });
+    new Notification('Pomodoro', { body, icon: ICON, silent: true });
   } catch {
     /* some browsers block the constructor outside a service worker */
   }

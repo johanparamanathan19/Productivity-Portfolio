@@ -1,5 +1,5 @@
 /**
- * Grove — a focus timer.
+ * Pomodoro — a focus timer.
  *
  * This module owns the phase machine (focus → break → focus) and wires the
  * pieces together; the mechanics live in their own modules alongside it.
@@ -18,7 +18,7 @@ import { createTaskList } from './tasks.js';
 import { recordFocusSession, renderStats } from './stats.js';
 import { notify, requestPermission } from './notify.js';
 
-const IDLE_TITLE = 'Grove — a focus timer';
+const IDLE_TITLE = 'Pomodoro — a focus timer';
 const AUTO_START_DELAY_MS = 900;
 
 const $ = (selector) => document.querySelector(selector);
@@ -51,7 +51,7 @@ const refs = {
     streak: $('#stat-streak'),
     total: $('#stat-total'),
     weekChart: $('#week-chart'),
-    grove: $('#grove'),
+    garden: $('#garden'),
   },
 };
 
@@ -129,7 +129,7 @@ function render() {
   refs.phaseLabel.textContent = MODE_META[mode].label;
   refs.sprout.textContent = MODE_META[mode].sprout;
   document.title = countdown.running
-    ? `${formatTime(countdown.remaining)} · ${MODE_META[mode].short} — Grove`
+    ? `${formatTime(countdown.remaining)} · ${MODE_META[mode].short} — Pomodoro`
     : IDLE_TITLE;
 
   paintRing();

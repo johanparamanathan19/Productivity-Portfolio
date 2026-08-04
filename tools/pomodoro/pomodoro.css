@@ -1,5 +1,5 @@
 /* ============================================================
-   Grove — timer-specific styles
+   Pomodoro — timer-specific styles
    Tokens and shared primitives come from assets/css/.
    ============================================================ */
 
@@ -13,22 +13,6 @@
 }
 
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
-
-/* ---------- Top bar ----------------------------------------- */
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
-.topbar-actions { display: flex; gap: 8px; }
-
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: inherit;
-  text-decoration: none;
-}
-.back-link svg { color: var(--text-dim); transition: transform 0.25s var(--ease-out), color 0.25s; }
-.back-link:hover svg { color: var(--text); transform: translateX(-3px); }
-.brand-mark { font-size: 22px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25)); }
-.brand-name { font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: 0.3px; }
 
 /* ---------- Mode switch ------------------------------------- */
 .timer-card { padding: 22px 24px 26px; }
@@ -375,11 +359,11 @@ body.running .sprout { animation: sway 4s ease-in-out infinite; }
 .week-bar.empty { background: var(--track); }
 .week-day { font-size: 11px; color: var(--text-dim); }
 
-.grove-row { margin-top: 8px; }
-.grove-title { margin: 0; }
-.grove { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; min-height: 30px; }
-.grove span { font-size: 20px; animation: sprout-in 0.5s var(--ease-spring) both; }
-.grove .grove-empty { font-size: 13px; color: var(--text-dim); animation: none; }
+.garden-row { margin-top: 8px; }
+.garden-title { margin: 0; }
+.garden { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; min-height: 30px; }
+.garden span { font-size: 20px; animation: sprout-in 0.5s var(--ease-spring) both; }
+.garden .garden-empty { font-size: 13px; color: var(--text-dim); animation: none; }
 @keyframes sprout-in { from { opacity: 0; transform: scale(0) translateY(6px); } }
 
 /* ---------- Responsive -------------------------------------- */

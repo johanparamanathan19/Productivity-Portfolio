@@ -10,10 +10,8 @@ deployed to GitHub Pages on every push to `main`.
 
 | Tool | What it does | Status |
 | --- | --- | --- |
-| [Grove](tools/pomodoro/) | Pomodoro focus timer with tasks, statistics, and a garden that grows as you work | Live |
-| Notes | Fast local scratchpad | Planned |
-| Dev Toolbox | JSON formatting, base64, UUIDs | Planned |
-| Converter | Units and everyday maths | Planned |
+| [Pomodoro](tools/pomodoro/) | Focus timer with tasks, statistics, and a garden that grows as you work | Live |
+| [Can I Afford This?](tools/affordability/) | Runs a purchase past the affordability rules lenders and planners use, and says what would change the answer | Live |
 
 Every tool keeps its data in `localStorage` — nothing is sent anywhere.
 
@@ -36,20 +34,44 @@ Every tool keeps its data in `localStorage` — nothing is sent anywhere.
 │       ├── toast.js        Transient status messages
 │       └── home.js         Home page entry point
 └── tools/
-    └── pomodoro/
+    ├── pomodoro/
+    │   ├── index.html
+    │   ├── pomodoro.css      Timer-specific styles
+    │   └── js/
+    │       ├── main.js       Phase machine + wiring
+    │       ├── config.js     Constants, defaults, storage keys
+    │       ├── state.js      Persisted settings, tasks, stats
+    │       ├── countdown.js  Drift-free wall-clock timer
+    │       ├── tasks.js      Task list behaviour
+    │       ├── stats.js      History, streaks, charts
+    │       ├── audio.js      Web Audio chimes and ticks
+    │       ├── confetti.js   Canvas celebration
+    │       └── notify.js     Desktop notifications
+    └── affordability/
         ├── index.html
-        ├── pomodoro.css      Timer-specific styles
+        ├── affordability.css
         └── js/
-            ├── main.js       Phase machine + wiring
-            ├── config.js     Constants, defaults, storage keys
-            ├── state.js      Persisted settings, tasks, stats
-            ├── countdown.js  Drift-free wall-clock timer
-            ├── tasks.js      Task list behaviour
-            ├── stats.js      History, streaks, charts
-            ├── audio.js      Web Audio chimes and ticks
-            ├── confetti.js   Canvas celebration
-            └── notify.js     Desktop notifications
+            ├── model.js      The rules engine — pure, no DOM
+            └── main.js       Form reading and rendering
 ```
+
+### How the affordability engine works
+
+`tools/affordability/js/model.js` holds every rule and threshold, as pure
+functions with no DOM or storage access, so the logic can be read — or
+tested — on its own. It does not invent a score. It runs the purchase past
+published guidelines and reports which ones it clears:
+
+- a 3–6 month emergency fund,
+- 50/30/20 budgeting (needs / wants / savings),
+- the 28/36 debt-to-income rule from mortgage underwriting,
+- the 30% housing-cost threshold used to define "cost burdened",
+- 20/4/10 for vehicles (20% down, ≤4 years, ≤10% of income).
+
+Thresholds are applied to **take-home** pay rather than gross, which makes
+them stricter than a lender's version. When the answer is no, the tool
+bisects the same model to find the price that *would* clear every check,
+which is usually the more useful number.
 
 ## Running locally
 

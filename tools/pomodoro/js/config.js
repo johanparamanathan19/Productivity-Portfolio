@@ -35,6 +35,11 @@ export const LIMITS = {
   rounds: [2, 12],
 };
 
+/**
+ * Deliberately still namespaced `grove.*`, the tool's former name. Renaming
+ * these would orphan the settings, tasks, and focus history of anyone who
+ * has already used it.
+ */
 export const STORAGE_KEYS = {
   settings: 'grove.settings',
   tasks: 'grove.tasks',
