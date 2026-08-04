@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f7d5b" />
+  <meta name="description" content="Check whether you can afford a purchase against the rules of thumb lenders and financial planners actually use — emergency fund, debt-to-income, 50/30/20, and 20/4/10." />
+  <title>Can I Afford This? — a purchase sanity check</title>
+
+  <!-- Apply the saved theme before first paint. See assets/js/theme.js. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('site.theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* storage unavailable — the default theme stands */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="affordability.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%B8%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <div class="grain"></div>
+  </div>
+
+  <main class="calc">
+    <header class="topbar">
+      <a class="back-link" href="../../" aria-label="Back to all tools">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span class="mark" aria-hidden="true">💸</span>
+        <span class="name">Can I Afford This?</span>
+      </a>
+      <div class="topbar-actions">
+        <label class="sr-only" for="currency">Currency</label>
+        <select id="currency" class="currency-select"></select>
+        <button id="theme-btn" class="icon-btn" title="Change theme" aria-label="Change theme">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="calc-grid">
+      <!-- ---------- Inputs ---------- -->
+      <form class="panel card" id="calc-form" autocomplete="off">
+        <h2 class="panel-title">The purchase</h2>
+
+        <div class="field">
+          <label for="category">What is it?</label>
+          <select id="category"></select>
+        </div>
+
+        <div class="field">
+          <label for="price">Price</label>
+          <input type="number" id="price" min="0" step="any" inputmode="decimal" placeholder="0" />
+        </div>
+
+        <div class="seg" role="radiogroup" aria-label="How are you paying?">
+          <label class="seg-option">
+            <input type="radio" name="pay" value="cash" checked />
+            <span>Pay in full</span>
+          </label>
+          <label class="seg-option">
+            <input type="radio" name="pay" value="financed" />
+            <span>Finance it</span>
+          </label>
+        </div>
+
+        <div id="finance-fields" class="field-row three" hidden>
+          <div class="field">
+            <label for="deposit">Deposit</label>
+            <input type="number" id="deposit" min="0" step="any" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="apr">Interest <span class="unit">% APR</span></label>
+            <input type="number" id="apr" min="0" step="any" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="term">Term <span class="unit">months</span></label>
+            <input type="number" id="term" min="1" step="1" inputmode="numeric" placeholder="36" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="ongoing">Running costs <span class="unit">per month</span></label>
+          <input type="number" id="ongoing" min="0" step="any" inputmode="decimal" placeholder="0" />
+          <p class="hint">Insurance, fuel, upkeep, fees — whatever this keeps costing after you buy it.</p>
+        </div>
+
+        <h2 class="panel-title">Your month</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="income">Take-home pay</label>
+            <input type="number" id="income" min="0" step="any" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="essentials">Essentials</label>
+            <input type="number" id="essentials" min="0" step="any" inputmode="decimal" placeholder="0" />
+          </div>
+        </div>
+        <p class="hint">Essentials means rent or mortgage, food, utilities, transport — the bills that do not pause.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="debt">Debt payments</label>
+            <input type="number" id="debt" min="0" step="any" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="saving">Saved each month</label>
+            <input type="number" id="saving" min="0" step="any" inputmode="decimal" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="savings">Savings you could spend today</label>
+          <input type="number" id="savings" min="0" step="any" inputmode="decimal" placeholder="0" />
+        </div>
+
+        <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn">Clear everything</button>
+      </form>
+
+      <!-- ---------- Results ---------- -->
+      <section class="results" aria-live="polite">
+        <div class="verdict card" id="verdict" data-tone="empty">
+          <span class="verdict-badge" id="verdict-badge">Waiting</span>
+          <h2 class="verdict-headline" id="verdict-headline">Tell me about the purchase</h2>
+          <p class="verdict-sub" id="verdict-sub">
+            A price and your monthly take-home pay are enough to get a first answer.
+          </p>
+        </div>
+
+        <div id="results-body" hidden>
+          <div class="figures" id="figures"></div>
+
+          <h3 class="group-title">The checks</h3>
+          <ul class="checks" id="checks"></ul>
+
+          <div id="guidance-wrap" hidden>
+            <h3 class="group-title">What would change the answer</h3>
+            <ul class="guidance" id="guidance"></ul>
+          </div>
+        </div>
+
+        <p class="disclaimer">
+          These are widely used rules of thumb — an emergency fund of 3–6 months, the 28/36
+          debt-to-income rule, 50/30/20 budgeting, the 30% housing threshold, and 20/4/10 for
+          vehicles — applied to take-home rather than gross pay, which makes them stricter than a
+          lender would be. It is a sanity check, not financial advice, and it knows nothing about
+          your tax, your job security, or what the purchase is worth to you. Nothing you type
+          leaves your device.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Theme picker -->
+  <div class="modal-backdrop" id="theme-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="theme-title">
+      <div class="modal-head">
+        <h2 id="theme-title">Theme</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="ctrl ctrl-primary text-btn" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

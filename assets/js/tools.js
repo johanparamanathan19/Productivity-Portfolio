@@ -17,32 +17,19 @@
 /** @type {Tool[]} */
 export const TOOLS = [
   {
-    name: 'Grove',
-    tagline: 'A Pomodoro timer that grows a small garden while you focus.',
+    name: 'Pomodoro',
+    tagline: 'A focus timer that grows a small garden while you work.',
     icon: '🌱',
     tags: ['Focus', 'Timer', 'Tasks'],
     status: 'live',
     href: 'tools/pomodoro/',
   },
   {
-    name: 'Notes',
-    tagline: 'A fast scratchpad for the thoughts you do not want to lose.',
-    icon: '📝',
-    tags: ['Writing', 'Markdown'],
-    status: 'soon',
-  },
-  {
-    name: 'Dev Toolbox',
-    tagline: 'Format JSON, encode base64, generate UUIDs — without a round trip.',
-    icon: '⚙️',
-    tags: ['JSON', 'Encoding', 'UUID'],
-    status: 'soon',
-  },
-  {
-    name: 'Converter',
-    tagline: 'Units, currencies, and the everyday maths you keep re-googling.',
-    icon: '📐',
-    tags: ['Units', 'Maths'],
-    status: 'soon',
+    name: 'Can I Afford This?',
+    tagline: 'Run a purchase past the rules of thumb lenders and planners actually use.',
+    icon: '💸',
+    tags: ['Money', 'Budgeting', 'Decisions'],
+    status: 'live',
+    href: 'tools/affordability/',
   },
 ];
