@@ -43,6 +43,7 @@
         <span class="name">Pomodoro</span>
       </a>
       <div class="topbar-actions">
+        <button id="sound-btn" class="icon-btn" hidden title="Mute ambience" aria-label="Mute ambience" aria-pressed="false"></button>
         <button id="stats-btn" class="icon-btn" title="Statistics" aria-label="Statistics">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg>
         </button>
@@ -182,6 +183,20 @@
         <label class="toggle-row slider-row">
           <span>Volume</span>
           <input type="range" id="volume" min="0" max="100" step="1" />
+        </label>
+
+        <h3 class="group-title">Soundscape</h3>
+        <div class="scene-grid" id="scene-grid" role="radiogroup" aria-label="Background sound"></div>
+        <p class="scene-note">
+          Generated live in your browser — no downloads, and it never loops.
+        </p>
+        <label class="toggle-row slider-row">
+          <span>Ambience volume</span>
+          <input type="range" id="scene-volume" min="0" max="100" step="1" />
+        </label>
+        <label class="toggle-row">
+          <span>Only while the timer runs</span>
+          <input type="checkbox" id="scene-while-running" class="switch" />
         </label>
 
         <h3 class="group-title">Theme</h3>
