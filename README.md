@@ -10,7 +10,7 @@ deployed to GitHub Pages on every push to `main`.
 
 | Tool | What it does | Status |
 | --- | --- | --- |
-| [Pomodoro](tools/pomodoro/) | Focus timer with tasks, statistics, and a garden that grows as you work | Live |
+| [Pomodoro](tools/pomodoro/) | Focus timer with tasks, statistics, synthesised background soundscapes, and a garden that grows as you work | Live |
 | [Can I Afford This?](tools/affordability/) | Runs a purchase past the affordability rules lenders and planners use, and says what would change the answer | Live |
 
 Every tool keeps its data in `localStorage` — nothing is sent anywhere.
@@ -38,15 +38,17 @@ Every tool keeps its data in `localStorage` — nothing is sent anywhere.
     │   ├── index.html
     │   ├── pomodoro.css      Timer-specific styles
     │   └── js/
-    │       ├── main.js       Phase machine + wiring
-    │       ├── config.js     Constants, defaults, storage keys
-    │       ├── state.js      Persisted settings, tasks, stats
-    │       ├── countdown.js  Drift-free wall-clock timer
-    │       ├── tasks.js      Task list behaviour
-    │       ├── stats.js      History, streaks, charts
-    │       ├── audio.js      Web Audio chimes and ticks
-    │       ├── confetti.js   Canvas celebration
-    │       └── notify.js     Desktop notifications
+    │       ├── main.js         Phase machine + wiring
+    │       ├── config.js       Constants, defaults, storage keys
+    │       ├── state.js        Persisted settings, tasks, stats
+    │       ├── countdown.js    Drift-free wall-clock timer
+    │       ├── tasks.js        Task list behaviour
+    │       ├── stats.js        History, streaks, charts
+    │       ├── audio-context.js  One shared AudioContext
+    │       ├── audio.js        Web Audio chimes and ticks
+    │       ├── soundscape.js   Synthesised background ambience
+    │       ├── confetti.js     Canvas celebration
+    │       └── notify.js       Desktop notifications
     └── affordability/
         ├── index.html
         ├── affordability.css
@@ -54,6 +56,22 @@ Every tool keeps its data in `localStorage` — nothing is sent anywhere.
             ├── model.js      The rules engine — pure, no DOM
             └── main.js       Form reading and rendering
 ```
+
+### How the soundscapes work
+
+`tools/pomodoro/js/soundscape.js` generates rain, ocean, café, white noise, and
+an ambient pad at runtime from noise buffers and oscillators. There are no
+audio files, so there is nothing to download, nothing to licence, and no
+megabytes in the repository — and because nothing is sampled, the ambience
+never loops.
+
+Broadly: white noise is a flat random signal, pink falls off at 3 dB per
+octave, and brown (integrated) noise is the rumble under most natural sound.
+Rain is band-limited noise plus scheduled droplet transients; ocean is brown
+noise under slow filter and gain swells; café is room tone plus randomised
+bursts in the speech range; the ambient pad plays a minor pentatonic through a
+synthesised reverb. Scene levels are matched against each other so switching
+does not jump in volume.
 
 ### How the affordability engine works
 

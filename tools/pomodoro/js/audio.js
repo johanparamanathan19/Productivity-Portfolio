@@ -3,22 +3,13 @@
  * so nothing to download and nothing to cache.
  */
 
+import { getAudioContext, resumeAudio } from './audio-context.js';
+
 /**
  * @param {() => {sound: boolean, volume: number}} getSettings
  *   read lazily so volume changes take effect immediately
  */
 export function createAudio(getSettings) {
-  /** @type {AudioContext | null} */
-  let ctx = null;
-
-  function ensure() {
-    if (!ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) ctx = new AudioCtx();
-    }
-    return ctx;
-  }
-
   /**
    * One enveloped sine/square blip.
    * @param {number} freq  hertz
@@ -26,7 +17,7 @@ export function createAudio(getSettings) {
    * @param {number} dur   seconds
    */
   function tone(freq, start, dur, type = 'sine', peak = 0.3) {
-    const audio = ensure();
+    const audio = getAudioContext();
     if (!audio) return;
 
     const at = audio.currentTime + start;
@@ -49,15 +40,12 @@ export function createAudio(getSettings) {
 
   return {
     /** Browsers start the context suspended until a user gesture. */
-    resume() {
-      const audio = ensure();
-      if (audio && audio.state === 'suspended') audio.resume();
-    },
+    resume: resumeAudio,
 
     /** @param {boolean} isFocus rising arpeggio for focus, falling for breaks */
     chime(isFocus) {
       if (!getSettings().sound) return;
-      this.resume();
+      resumeAudio();
       const notes = isFocus ? [523.25, 659.25, 783.99, 1046.5] : [659.25, 523.25, 392.0];
       notes.forEach((freq, i) => tone(freq, i * 0.14, 0.55, 'sine', 0.32));
     },

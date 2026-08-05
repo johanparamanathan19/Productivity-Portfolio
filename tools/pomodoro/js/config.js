@@ -25,6 +25,11 @@ export const DEFAULTS = {
   tick: false,
   notify: false,
   volume: 60,
+  soundscape: 'none',
+  soundscapeVolume: 45,
+  // Ambience that keeps playing after the timer stops is a nuisance, so the
+  // default ties it to the session.
+  soundscapeWhileRunning: true,
 };
 
 /** Allowed ranges for the numeric settings inputs. */

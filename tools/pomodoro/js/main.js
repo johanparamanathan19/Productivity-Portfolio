@@ -17,9 +17,20 @@ import { createConfetti } from './confetti.js';
 import { createTaskList } from './tasks.js';
 import { recordFocusSession, renderStats } from './stats.js';
 import { notify, requestPermission } from './notify.js';
+import { SOUNDSCAPES, createSoundscape } from './soundscape.js';
 
 const IDLE_TITLE = 'Pomodoro — a focus timer';
 const AUTO_START_DELAY_MS = 900;
+
+const ICON_SOUND_ON =
+  '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" ' +
+  'stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>' +
+  '<path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+
+const ICON_SOUND_OFF =
+  '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" ' +
+  'stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>' +
+  '<line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>';
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -43,6 +54,8 @@ const refs = {
   settingsModal: $('#settings-modal'),
   statsModal: $('#stats-modal'),
   themeGrid: $('#theme-grid'),
+  sceneGrid: $('#scene-grid'),
+  soundBtn: $('#sound-btn'),
   confetti: $('#confetti'),
 
   stats: {
@@ -63,12 +76,15 @@ let mode = 'focus';
 let completedInCycle = 0;
 /** Pomodoro estimate attached to the next task added. */
 let pendingEstimate = 1;
+/** Quick mute from the top bar. Session-only — not worth persisting. */
+let ambienceMuted = false;
 
 const durationFor = (phase) => settings[phase] * 60;
 
 // ---------- Collaborators ----------
 
 const audio = createAudio(() => settings);
+const soundscape = createSoundscape(() => settings.soundscapeVolume / 100);
 const confetti = createConfetti(refs.confetti);
 const countdown = createCountdown({ onTick: handleTick, onFinish: handleFinish });
 const taskList = createTaskList({
@@ -124,6 +140,62 @@ function renderControls() {
       : 'Start';
 }
 
+// ---------- Soundscape ----------
+
+/**
+ * Single place that decides whether ambience should be audible, so every
+ * caller (start, pause, settings, mute) just calls this and stops guessing.
+ */
+function syncSoundscape() {
+  const chosen = settings.soundscape;
+  const wanted =
+    chosen !== 'none' &&
+    !ambienceMuted &&
+    (!settings.soundscapeWhileRunning || countdown.running);
+
+  if (wanted) soundscape.play(chosen);
+  else soundscape.stop();
+
+  // The mute button is meaningless with no scene selected.
+  refs.soundBtn.hidden = chosen === 'none';
+  refs.soundBtn.innerHTML = ambienceMuted ? ICON_SOUND_OFF : ICON_SOUND_ON;
+  refs.soundBtn.classList.toggle('is-muted', ambienceMuted);
+  refs.soundBtn.setAttribute('aria-pressed', String(ambienceMuted));
+  const action = ambienceMuted ? 'Unmute ambience' : 'Mute ambience';
+  refs.soundBtn.title = action;
+  refs.soundBtn.setAttribute('aria-label', action);
+}
+
+function renderSceneGrid() {
+  refs.sceneGrid.replaceChildren(
+    ...SOUNDSCAPES.map((scene) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'scene-chip' + (scene.id === settings.soundscape ? ' selected' : '');
+      chip.setAttribute('role', 'radio');
+      chip.setAttribute('aria-checked', String(scene.id === settings.soundscape));
+
+      const icon = document.createElement('span');
+      icon.className = 'scene-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = scene.icon;
+
+      const label = document.createElement('span');
+      label.textContent = scene.label;
+
+      chip.append(icon, label);
+      chip.addEventListener('click', () => {
+        updateSetting('soundscape', scene.id);
+        // Picking a scene is itself the gesture that unmutes.
+        ambienceMuted = false;
+        renderSceneGrid();
+        syncSoundscape();
+      });
+      return chip;
+    }),
+  );
+}
+
 function render() {
   refs.time.textContent = formatTime(countdown.remaining);
   refs.phaseLabel.textContent = MODE_META[mode].label;
@@ -145,6 +217,7 @@ function setMode(next) {
   countdown.set(durationFor(mode));
   renderModeSwitch();
   render();
+  syncSoundscape();
 }
 
 function start() {
@@ -152,12 +225,21 @@ function start() {
   audio.resume(); // must happen inside the click gesture
   countdown.start();
   render();
+  syncSoundscape();
 }
 
 function toggle() {
   if (countdown.running) countdown.pause();
   else start();
   render();
+  syncSoundscape();
+}
+
+/** Stop and rewind, keeping the ambience in step. */
+function resetTimer() {
+  countdown.reset();
+  render();
+  syncSoundscape();
 }
 
 function handleTick() {
@@ -218,6 +300,8 @@ function syncSettingsInputs() {
   $('#tick-on').checked = settings.tick;
   $('#notify-on').checked = settings.notify;
   $('#volume').value = settings.volume;
+  $('#scene-volume').value = settings.soundscapeVolume;
+  $('#scene-while-running').checked = settings.soundscapeWhileRunning;
 }
 
 /** Reflect a duration change immediately when the timer is not mid-session. */
@@ -262,12 +346,21 @@ function bindSettings() {
   // Preview the new level once the user lets go of the slider.
   $('#volume').addEventListener('change', () => audio.chime(true));
 
+  $('#scene-volume').addEventListener('input', (event) => {
+    updateSetting('soundscapeVolume', parseInt(event.target.value, 10));
+    soundscape.setVolume();
+  });
+  bindToggle('#scene-while-running', 'soundscapeWhileRunning');
+  $('#scene-while-running').addEventListener('change', syncSoundscape);
+
   $('#reset-defaults').addEventListener('click', () => {
     resetSettings();
     syncSettingsInputs();
+    renderSceneGrid();
     countdown.reset();
     countdown.set(durationFor(mode));
     render();
+    syncSoundscape();
     showToast('Settings reset to defaults');
   });
 }
@@ -283,11 +376,13 @@ function openStats() {
 
 function bindEvents() {
   refs.startBtn.addEventListener('click', toggle);
-  refs.resetBtn.addEventListener('click', () => {
-    countdown.reset();
-    render();
-  });
+  refs.resetBtn.addEventListener('click', resetTimer);
   refs.skipBtn.addEventListener('click', skip);
+
+  refs.soundBtn.addEventListener('click', () => {
+    ambienceMuted = !ambienceMuted;
+    syncSoundscape();
+  });
   refs.modeTabs.forEach((tab) => tab.addEventListener('click', () => setMode(tab.dataset.setMode)));
 
   $('#settings-btn').addEventListener('click', () => openModal(refs.settingsModal));
@@ -326,8 +421,7 @@ function bindEvents() {
       event.preventDefault();
       toggle();
     } else if (event.key === 'r' || event.key === 'R') {
-      countdown.reset();
-      render();
+      resetTimer();
     } else if (event.key === 's' || event.key === 'S') {
       skip();
     }
@@ -348,12 +442,13 @@ function init() {
   mountThemePicker(refs.themeGrid);
   bindModals([refs.settingsModal, refs.statsModal]);
   syncSettingsInputs();
+  renderSceneGrid();
   bindSettings();
   bindEvents();
 
   refs.estValue.textContent = String(pendingEstimate);
   taskList.render();
-  setMode('focus');
+  setMode('focus'); // also settles the soundscape into its idle state
 }
 
 init();

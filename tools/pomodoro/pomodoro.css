@@ -319,6 +319,39 @@ body.running .sprout { animation: sway 4s ease-in-out infinite; }
 .switch:checked { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
 .switch:checked::after { transform: translateX(20px); }
 
+/* ---------- Soundscape picker -------------------------------- */
+.scene-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+.scene-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 6px;
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text-dim);
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease-spring), border-color 0.25s, background 0.25s, color 0.25s;
+}
+.scene-chip .scene-icon { font-size: 20px; line-height: 1; }
+.scene-chip:hover { background: var(--surface-2); transform: translateY(-2px); }
+.scene-chip.selected {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.scene-note { margin: 10px 0 0; color: var(--text-dim); font-size: 11.5px; line-height: 1.5; }
+
+/* The ambience toggle dims when muted, so its state reads at a glance. */
+#sound-btn.is-muted { color: var(--text-dim); opacity: 0.6; }
+
 /* ---------- Stats modal ------------------------------------- */
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
 .stat-tile {
