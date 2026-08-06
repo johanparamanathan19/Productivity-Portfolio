@@ -1,0 +1,44 @@
+name: Idea or improvement
+description: Suggest a new tool, or a change to an existing one
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Worth knowing before you write: this project deliberately has no
+        dependencies, no build step, and sends nothing off the device. Ideas
+        that fit inside those constraints are much likelier to happen.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: >
+        The situation you were in when you wanted it, rather than the solution
+        you have in mind. That usually leads somewhere better.
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What did you have in mind?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Is this a new tool or a change to an existing one?
+      options:
+        - A change to an existing tool
+        - A new tool
+        - Something about the site itself
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you tried already?
+      description: Other tools, workarounds, or why the current behaviour falls short.

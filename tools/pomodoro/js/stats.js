@@ -34,6 +34,32 @@ export function recordFocusSession() {
   saveStats();
 }
 
+/**
+ * Rebuild the total and the streak from the per-day counts.
+ *
+ * Normally both are maintained incrementally, which is cheaper but assumes
+ * days only ever arrive in order. A restored backup breaks that assumption —
+ * it can introduce days in the past — so after a merge the per-day counts are
+ * treated as the source of truth and everything else is derived from them.
+ */
+export function recountFromDays() {
+  const days = stats.days || {};
+  stats.total = Object.values(days).reduce((sum, n) => sum + (Number(n) || 0), 0);
+
+  // Walk back from today. A gap ends the streak, but not having started yet
+  // today shouldn't, so an empty today is skipped rather than counted.
+  let streak = 0;
+  for (let back = 0; back < 3650; back++) {
+    const count = days[dayKey(daysAgo(back))] || 0;
+    if (count > 0) streak += 1;
+    else if (back > 0) break;
+  }
+  stats.streak = streak;
+
+  const active = Object.keys(days).filter((key) => days[key] > 0).sort();
+  stats.lastDay = active.length ? active[active.length - 1] : null;
+}
+
 function renderWeekChart(container) {
   const days = [];
   for (let i = 6; i >= 0; i--) {

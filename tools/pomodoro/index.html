@@ -44,6 +44,9 @@
       </a>
       <div class="topbar-actions">
         <button id="sound-btn" class="icon-btn" hidden title="Mute ambience" aria-label="Mute ambience" aria-pressed="false"></button>
+        <button id="guide-btn" class="icon-btn" title="How to use this" aria-label="How to use this">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
         <button id="stats-btn" class="icon-btn" title="Statistics" aria-label="Statistics">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg>
         </button>
@@ -246,10 +249,128 @@
           <h3 class="group-title garden-title">Today's garden</h3>
           <div class="garden" id="garden" title="One sprout per focus session today"></div>
         </div>
+
+        <h3 class="group-title">Keeping your history</h3>
+        <p class="data-note">
+          Your sessions save to this browser automatically — they are already here when you
+          come back. They are only in <em>this</em> browser though, so clearing site data or
+          moving to another machine loses them. A backup file travels.
+        </p>
+        <div class="data-actions">
+          <button type="button" class="ctrl ctrl-ghost text-btn" id="export-stats">Save a backup</button>
+          <button type="button" class="ctrl ctrl-ghost text-btn" id="import-stats">Restore a backup</button>
+          <input type="file" id="import-file" accept="application/json,.json" hidden />
+        </div>
       </div>
       <div class="modal-foot">
         <button class="ctrl ctrl-ghost text-btn" id="reset-stats">Clear statistics</button>
         <button class="ctrl ctrl-primary text-btn" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Guide ---------- -->
+  <div class="modal-backdrop" id="guide-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <div class="modal-head">
+        <h2 id="guide-title">How to use this</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body guide">
+        <ol class="guide-steps">
+          <li>
+            <strong>Pick one thing.</strong>
+            Add it to the task list and tap it to make it active. One task — not a whole
+            category of work.
+          </li>
+          <li>
+            <strong>Start the timer and defend it.</strong>
+            For the next 25 minutes that task is the only thing. No inbox, no quick look at
+            anything.
+          </li>
+          <li>
+            <strong>Park distractions, don't chase them.</strong>
+            When something unrelated surfaces — and it will — add it to the task list and
+            carry on. It will still be there in five minutes.
+          </li>
+          <li>
+            <strong>Stop when it rings.</strong>
+            Even mid-sentence. The break is part of the method, not a reward for finishing.
+          </li>
+          <li>
+            <strong>Actually take the five minutes.</strong>
+            Stand up, look out of a window, get water. Another screen is not a break.
+          </li>
+          <li>
+            <strong>After four rounds, take a longer one.</strong>
+            Fifteen to thirty minutes. The dots under the clock track where you are in the cycle.
+          </li>
+        </ol>
+
+        <h3 class="group-title">Why it works</h3>
+
+        <div class="guide-reason">
+          <h4>A deadline you can see</h4>
+          <p>
+            "Work on the report" has no edges. "Work on the report until this ring closes"
+            does. Decades of goal-setting research by Locke and Latham found that specific,
+            bounded goals reliably beat telling yourself to do your best.
+          </p>
+        </div>
+
+        <div class="guide-reason">
+          <h4>Starting costs less</h4>
+          <p>
+            The hardest part of difficult work is beginning it. Committing to 25 minutes is a
+            much smaller ask than committing to the task, and beginning is usually the whole
+            problem.
+          </p>
+        </div>
+
+        <div class="guide-reason">
+          <h4>Interruptions cost more than they look</h4>
+          <p>
+            Switching between tasks carries a real cost in time and errors — Rubinstein, Meyer
+            and Evans measured it in 2001. A pomodoro is a container that makes an interruption
+            something you can see yourself refusing.
+          </p>
+        </div>
+
+        <div class="guide-reason">
+          <h4>Attention fades unless you break it</h4>
+          <p>
+            Sustained attention degrades the longer it is held, an effect known as the
+            vigilance decrement. Ariga and Lleras found in 2011 that brief diversions away from
+            a task restore performance on it — the break is doing work.
+          </p>
+        </div>
+
+        <div class="guide-reason">
+          <h4>Unfinished work stays live</h4>
+          <p>
+            Bluma Zeigarnik observed in 1927 that interrupted tasks stay more accessible in
+            memory than completed ones. Stopping at the ring turns that into an advantage: you
+            come back with the thread still in your hand.
+          </p>
+        </div>
+
+        <div class="guide-caveat">
+          <h4>Worth being honest about</h4>
+          <p>
+            The 25-and-5 split is not itself a research finding — Francesco Cirillo picked it in
+            the late 1980s, timing himself with a tomato-shaped kitchen timer, which is where the
+            name comes from. What the evidence supports is the shape of the thing: bounded
+            focus, deliberate breaks, and protection from interruption. If 50 and 10 fits your
+            work better, change it in settings. The method is the structure, not the number.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="ctrl ctrl-primary text-btn" data-close>Got it</button>
       </div>
     </div>
   </div>

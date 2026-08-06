@@ -164,6 +164,20 @@ function renderFigures(d) {
   items.push(figure('Total you pay', money(d.totalCost), d.totalInterest > 0 ? `${money(d.totalInterest)} of it interest` : 'no interest'));
   items.push(figure('Costs you', hours(d.hoursOfWork), 'worth of what you earn'));
 
+  // The same number the hours tile is built from, said the other way round —
+  // a year of pay is easier to picture than 400 hours of it.
+  if (d.income > 0) {
+    const yearly = d.income * 12;
+    const share = Math.round((d.totalCost / yearly) * 100);
+    items.push(
+      figure(
+        'You earn a year',
+        money(yearly),
+        `this is ${share < 1 ? 'under 1' : share}% of it`,
+      ),
+    );
+  }
+
   if (Number.isFinite(d.bufferMonths)) {
     items.push(
       figure(

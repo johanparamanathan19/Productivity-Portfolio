@@ -18,6 +18,7 @@ import { createTaskList } from './tasks.js';
 import { recordFocusSession, renderStats } from './stats.js';
 import { notify, requestPermission } from './notify.js';
 import { SOUNDSCAPES, createSoundscape } from './soundscape.js';
+import { applyBackup, downloadBackup, parseBackup } from './backup.js';
 
 const IDLE_TITLE = 'Pomodoro — a focus timer';
 const AUTO_START_DELAY_MS = 900;
@@ -53,6 +54,7 @@ const refs = {
 
   settingsModal: $('#settings-modal'),
   statsModal: $('#stats-modal'),
+  guideModal: $('#guide-modal'),
   themeGrid: $('#theme-grid'),
   sceneGrid: $('#scene-grid'),
   soundBtn: $('#sound-btn'),
@@ -372,6 +374,48 @@ function openStats() {
   openModal(refs.statsModal);
 }
 
+// ---------- Backup ----------
+
+function handleImportFile(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onerror = () => showToast('Could not read that file');
+  reader.onload = () => {
+    const parsed = parseBackup(String(reader.result));
+    if (!parsed.ok) {
+      showToast(parsed.error);
+      return;
+    }
+
+    const added = applyBackup(parsed);
+    renderStats(refs.stats, settings.focus);
+    taskList.render();
+
+    const parts = [];
+    if (added.days) parts.push(`${added.days} day${added.days === 1 ? '' : 's'}`);
+    if (added.tasks) parts.push(`${added.tasks} task${added.tasks === 1 ? '' : 's'}`);
+    showToast(parts.length ? `Restored ${parts.join(' and ')}` : 'Already up to date');
+  };
+  reader.readAsText(file);
+}
+
+function bindBackup() {
+  const picker = $('#import-file');
+
+  $('#export-stats').addEventListener('click', () => {
+    downloadBackup();
+    showToast('Backup saved');
+  });
+
+  $('#import-stats').addEventListener('click', () => picker.click());
+  picker.addEventListener('change', () => {
+    handleImportFile(picker.files && picker.files[0]);
+    // Reset so picking the same file twice fires `change` again.
+    picker.value = '';
+  });
+}
+
 // ---------- Events ----------
 
 function bindEvents() {
@@ -387,6 +431,8 @@ function bindEvents() {
 
   $('#settings-btn').addEventListener('click', () => openModal(refs.settingsModal));
   $('#stats-btn').addEventListener('click', openStats);
+  $('#guide-btn').addEventListener('click', () => openModal(refs.guideModal));
+  bindBackup();
   $('#reset-stats').addEventListener('click', () => {
     resetStats();
     renderStats(refs.stats, settings.focus);
@@ -415,7 +461,7 @@ function bindEvents() {
 
   document.addEventListener('keydown', (event) => {
     const isTyping = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
-    if (isTyping || isAnyModalOpen([refs.settingsModal, refs.statsModal])) return;
+    if (isTyping || isAnyModalOpen([refs.settingsModal, refs.statsModal, refs.guideModal])) return;
 
     if (event.code === 'Space') {
       event.preventDefault();
@@ -440,7 +486,7 @@ function init() {
   refs.ring.style.strokeDasharray = RING_CIRCUMFERENCE.toFixed(2);
 
   mountThemePicker(refs.themeGrid);
-  bindModals([refs.settingsModal, refs.statsModal]);
+  bindModals([refs.settingsModal, refs.statsModal, refs.guideModal]);
   syncSettingsInputs();
   renderSceneGrid();
   bindSettings();
