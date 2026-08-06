@@ -1,0 +1,69 @@
+name: Bug report
+description: Something in one of the tools does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. If this is a security issue, please follow
+        [SECURITY.md](https://github.com/johanparamanathan19/Productivity-Portfolio/blob/main/SECURITY.md)
+        instead of filing it publicly.
+
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Which tool?
+      options:
+        - Pomodoro
+        - Can I Afford This?
+        - Home page
+        - Something else / not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Pomodoro timer
+        2. Set focus to 1 minute
+        3. Start it and wait
+        4. ...
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Firefox 128 on macOS 14
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: >
+        Anything red in the browser console, if there is any. Open it with
+        F12 or Cmd+Option+I.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked this is not already reported
+          required: true
+        - label: I tried a reload, in case it was a stale cached file
+          required: false

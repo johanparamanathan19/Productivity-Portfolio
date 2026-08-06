@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/johanparamanathan19/Productivity-Portfolio/security
+    about: Please report privately rather than opening a public issue.
+  - name: How the affordability model works
+    url: https://github.com/johanparamanathan19/Productivity-Portfolio/blob/main/docs/affordability-model.md
+    about: Which guidelines the calculator applies, before reporting a wrong answer.

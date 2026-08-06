@@ -55,7 +55,7 @@
         <h2 class="panel-title">What are you buying?</h2>
 
         <div class="field">
-          <label for="category">What kind of thing is it?</label>
+          <label for="category">Pick the category of purchase</label>
           <select id="category"></select>
         </div>
 
@@ -107,7 +107,14 @@
         <div class="field">
           <label for="income">How much lands in your account each month?</label>
           <input type="number" id="income" min="0" step="any" inputmode="decimal" placeholder="e.g. 35 000" />
-          <p class="hint">What you're actually paid after tax — not your salary before deductions.</p>
+          <div class="infobox">
+            <span class="infobox-icon" aria-hidden="true">i</span>
+            <p>
+              <strong>This is after tax.</strong> Use the figure that actually arrives in your
+              account on payday, not the gross salary in your contract. If your pay varies,
+              take a normal month rather than your best one.
+            </p>
+          </div>
         </div>
 
         <div class="field">
@@ -118,7 +125,15 @@
             </button>
           </label>
           <input type="number" id="essentials" min="0" step="any" inputmode="decimal" placeholder="e.g. 17 500" />
-          <p class="hint">Rent or mortgage, food, transport, utilities — what you'd still owe even if you skipped this purchase.</p>
+          <div class="infobox">
+            <span class="infobox-icon" aria-hidden="true">i</span>
+            <p>
+              <strong>Everything you spend in a normal month.</strong> Rent or mortgage, food,
+              electricity, transport, phone, insurance, childcare, subscriptions — the lot. The
+              easiest way to get it: take a month of bank statements and subtract what you had
+              left at the end from what you started with.
+            </p>
+          </div>
         </div>
 
         <div class="field">
@@ -136,7 +151,14 @@
         <div class="field">
           <label for="savings">How much could you get your hands on today?</label>
           <input type="number" id="savings" min="0" step="any" inputmode="decimal" placeholder="e.g. 40 000" />
-          <p class="hint">Money in the bank you could actually spend — not a pension or anything locked away.</p>
+          <div class="infobox">
+            <span class="infobox-icon" aria-hidden="true">i</span>
+            <p>
+              <strong>Cash you could spend this afternoon.</strong> A savings or current
+              account. Not index funds, stocks, or crypto — those take days to sell and might
+              be down when you need them. Not a pension, and not your credit limit.
+            </p>
+          </div>
         </div>
 
         <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn">Clear everything</button>
