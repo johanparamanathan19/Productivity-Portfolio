@@ -47,8 +47,42 @@
 }
 
 .field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; min-width: 0; }
-.field label { font-size: 13px; font-weight: 500; color: var(--text-dim); }
+.field label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
 .field .unit { opacity: 0.7; font-weight: 400; }
+
+/* Inline "not sure? do this instead" shortcut, offered inside a label. */
+.quickfill {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s;
+}
+.quickfill:hover { opacity: 0.75; }
+.quickfill[hidden] { display: none; }
+
+.section-note {
+  margin: -10px 0 20px;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
 
 .field input,
 .field select {
@@ -200,6 +234,9 @@
 .check-pass { --check-color: var(--good); }
 .check-warn { --check-color: var(--ok); }
 .check-fail { --check-color: var(--bad); }
+/* A question left blank isn't a warning about your finances — it's neutral,
+   so it borrows the accent colour rather than the good/ok/bad palette. */
+.check-ask { --check-color: var(--accent); border-style: dashed; }
 
 .check-label {
   display: flex;
