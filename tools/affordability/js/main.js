@@ -36,6 +36,8 @@ const el = {
   currency: $('#currency'),
   category: $('#category'),
   financeFields: $('#finance-fields'),
+  ongoingHint: $('#ongoing-hint'),
+  essentialsFill: $('#essentials-fill'),
   verdict: $('#verdict'),
   verdictBadge: $('#verdict-badge'),
   verdictHeadline: $('#verdict-headline'),
@@ -98,6 +100,9 @@ const num = (value) => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+/** An untouched field, as opposed to one a user deliberately set to 0. */
+const isBlank = (value) => String(value ?? '').trim() === '';
+
 /** Map the raw form state onto the shape the model expects. */
 function toModelInput(state) {
   return {
@@ -113,6 +118,15 @@ function toModelInput(state) {
     debtPayments: num(state.debt),
     savings: num(state.savings),
     monthlySaving: num(state.saving),
+  };
+}
+
+/** Which of the optional money questions the user has actually touched. */
+function toAnswered(state) {
+  return {
+    savings: !isBlank(state.savings),
+    essentials: !isBlank(state.essentials),
+    debtPayments: !isBlank(state.debt),
   };
 }
 
@@ -148,7 +162,7 @@ function renderFigures(d) {
     items.push(figure('Per month', money(d.commitment), d.financed ? 'payment + running costs' : 'running costs'));
   }
   items.push(figure('Total you pay', money(d.totalCost), d.totalInterest > 0 ? `${money(d.totalInterest)} of it interest` : 'no interest'));
-  items.push(figure('Costs you', hours(d.hoursOfWork), 'at your take-home rate'));
+  items.push(figure('Costs you', hours(d.hoursOfWork), 'worth of what you earn'));
 
   if (Number.isFinite(d.bufferMonths)) {
     items.push(
@@ -167,7 +181,7 @@ function renderChecks(checks) {
   el.checks.replaceChildren(
     ...checks.map((check) => {
       const item = document.createElement('li');
-      item.className = `check check-${check.status}`;
+      item.className = `check check-${check.status}` + (check.informational ? ' check-ask' : '');
 
       const dot = document.createElement('span');
       dot.className = 'check-dot';
@@ -181,7 +195,9 @@ function renderChecks(checks) {
 
       const status = document.createElement('span');
       status.className = 'check-status';
-      status.textContent = { pass: 'clears', warn: 'tight', fail: 'fails' }[check.status];
+      status.textContent = check.informational
+        ? 'add this'
+        : { pass: 'clears', warn: 'tight', fail: 'fails' }[check.status];
       label.append(status);
 
       const detail = document.createElement('p');
@@ -219,32 +235,40 @@ function listOf(items) {
   return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
 }
 
-/** One line summarising why the verdict came out the way it did. */
+/** One or two lines: why the verdict came out this way, then what's missing. */
 function verdictSummary(result) {
-  const fails = result.checks.filter((c) => c.status === 'fail');
-  const warns = result.checks.filter((c) => c.status === 'warn');
+  const missing = result.checks.filter((c) => c.informational);
+  const real = result.checks.filter((c) => !c.informational);
+  const fails = real.filter((c) => c.status === 'fail');
+  const warns = real.filter((c) => c.status === 'warn');
 
+  let text;
   if (fails.length) {
-    return `It does not clear ${listOf(fails.map((c) => c.label.toLowerCase()))}.`;
+    text = `It does not clear ${listOf(fails.map((c) => c.label.toLowerCase()))}.`;
+  } else if (warns.length >= 2) {
+    text = `It clears every check, but ${warns.length} of them only just — this leaves you less slack than is comfortable.`;
+  } else if (warns.length === 1) {
+    text = `It clears every check, with ${warns[0].label.toLowerCase()} the one to keep an eye on.`;
+  } else {
+    text = 'It clears every check with room to spare.';
   }
-  if (warns.length >= 2) {
-    return `It clears every check, but ${warns.length} of them only just — this leaves you less slack than is comfortable.`;
+
+  if (missing.length === 1) {
+    text += ' Answer one more question above for a sharper answer.';
+  } else if (missing.length > 1) {
+    text += ` Answer ${missing.length} more questions above for a sharper answer.`;
   }
-  if (warns.length === 1) {
-    return `It clears every check, with ${warns[0].label.toLowerCase()} the one to keep an eye on.`;
-  }
-  return 'It clears every check with room to spare.';
+  return text;
 }
 
 function render(state) {
-  const result = evaluate(toModelInput(state), money);
+  const result = evaluate(toModelInput(state), money, toAnswered(state));
 
   if (!result.ready) {
     el.verdict.dataset.tone = 'empty';
     el.verdictBadge.textContent = 'Waiting';
-    el.verdictHeadline.textContent = 'Tell me about the purchase';
-    el.verdictSub.textContent =
-      'A price and your monthly take-home pay are enough to get a first answer.';
+    el.verdictHeadline.textContent = 'Fill in the price and your income';
+    el.verdictSub.textContent = "That's enough for a first answer — the rest sharpens it.";
     el.resultsBody.hidden = true;
     return;
   }
@@ -271,10 +295,23 @@ function populateSelects() {
   );
 }
 
+/** Round to a step that scales with the size of the number — no one wants "17 483". */
+function roundish(n) {
+  const step = n >= 10000 ? 500 : n >= 1000 ? 100 : 10;
+  return Math.round(n / step) * step;
+}
+
 function update({ persist = true } = {}) {
   const state = readForm();
   money = buildFormatter(state.currency);
   el.financeFields.hidden = !state.financed;
+
+  const category = CATEGORIES.find((c) => c.id === state.category) || CATEGORIES[0];
+  el.ongoingHint.textContent = category.running;
+
+  // Offer the shortcut only while it would still do something useful.
+  el.essentialsFill.hidden = isBlank(state.income) || !isBlank(state.essentials);
+
   render(state);
   if (persist) save(STORAGE_KEY, state);
 }
@@ -295,6 +332,12 @@ function init() {
     writeForm(DEFAULTS);
     update();
     showToast('Cleared');
+  });
+
+  el.essentialsFill.addEventListener('click', () => {
+    const income = num($('#income').value);
+    $('#essentials').value = roundish(income / 2);
+    update();
   });
 
   const themeModal = $('#theme-modal');

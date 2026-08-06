@@ -41,10 +41,38 @@ export const CURRENCIES = [
  * take-home pay. `warn` is the comfortable limit, `fail` the stretch limit.
  */
 export const CATEGORIES = [
-  { id: 'general', label: 'General purchase', warn: 0.1, fail: 0.2 },
-  { id: 'vehicle', label: 'Car or vehicle', warn: 0.1, fail: 0.15 },
-  { id: 'housing', label: 'Home or rent', warn: 0.3, fail: 0.4 },
-  { id: 'recurring', label: 'Subscription or membership', warn: 0.05, fail: 0.1 },
+  {
+    id: 'general',
+    label: 'Something one-off — a gadget, furniture, a trip',
+    phrase: 'a one-off purchase',
+    running: 'Most one-off things cost nothing extra. Insurance or a warranty would count.',
+    warn: 0.1,
+    fail: 0.2,
+  },
+  {
+    id: 'vehicle',
+    label: 'A car, bike, or other vehicle',
+    phrase: 'a vehicle',
+    running: 'Insurance, fuel or charging, tyres, servicing, parking, road tax.',
+    warn: 0.1,
+    fail: 0.15,
+  },
+  {
+    id: 'housing',
+    label: 'Somewhere to live — rent or a mortgage',
+    phrase: 'somewhere to live',
+    running: 'Heating, electricity, water, building insurance, shared or service charges.',
+    warn: 0.3,
+    fail: 0.4,
+  },
+  {
+    id: 'recurring',
+    label: 'A subscription or membership',
+    phrase: 'a subscription',
+    running: 'The monthly fee itself goes here, and leave the price above at 0.',
+    warn: 0.05,
+    fail: 0.1,
+  },
 ];
 
 /** Months of essential spending the buffer should cover. */
@@ -159,50 +187,67 @@ const plainMoney = (n) => Math.round(n).toLocaleString();
 
 /**
  * @param {(n:number)=>string} money formats an amount in the user's currency
- * @returns {{id:string,label:string,status:'pass'|'warn'|'fail',detail:string}[]}
+ * @param {Record<string, boolean>} answered which questions the user actually
+ *   filled in, keyed by Input property (savings, essentials, debtPayments).
+ *   A blank field is not the same as a zero, and treating it as one is how a
+ *   calculator hands back a confident wrong answer. A key that is *missing*
+ *   from this map counts as answered — only an explicit `false` counts as
+ *   blank — so callers that skip building the map (tests, the price search)
+ *   get the old all-zeros-is-fine behaviour rather than every check going
+ *   informational.
+ * @returns {{id:string,label:string,status:'pass'|'warn'|'fail',detail:string,informational?:boolean}[]}
  */
-function runChecks(d, categoryId, money = plainMoney) {
+function runChecks(d, categoryId, money = plainMoney, answered = {}) {
   const category = CATEGORIES.find((c) => c.id === categoryId) || CATEGORIES[0];
   const checks = [];
   const months = (n) => `${n.toFixed(1)} month${n.toFixed(1) === '1.0' ? '' : 's'}`;
   const pct = (n) => `${Math.round(n * 100)}%`;
+  const blank = (key) => answered[key] === false;
 
-  // 1. Does the cash outlay leave a working emergency fund?
-  if (d.savingsAfter < 0) {
+  // 1. Does the upfront cost leave enough behind to absorb a bad month?
+  if (blank('savings')) {
     checks.push({
       id: 'buffer',
-      label: 'Emergency fund',
-      status: 'fail',
-      detail: `You are ${money(Math.abs(d.savingsAfter))} short of the upfront cost, before any buffer.`,
-    });
-  } else if (d.essentials <= 0) {
-    checks.push({
-      id: 'buffer',
-      label: 'Emergency fund',
+      label: 'Your safety net',
       status: 'warn',
-      // Missing data rather than a real problem: it should temper the verdict,
-      // but it must not make the price search unsolvable.
+      // Unanswered, not a problem: it should not sink the verdict, and it must
+      // not make the "what price would work" search unsolvable.
       informational: true,
-      detail: 'Add your monthly essentials to check this properly.',
+      detail: 'Tell me roughly what you have saved and I can check what this leaves you.',
+    });
+  } else if (d.savingsAfter < 0) {
+    checks.push({
+      id: 'buffer',
+      label: 'Your safety net',
+      status: 'fail',
+      detail: `You would be ${money(Math.abs(d.savingsAfter))} short of the amount due up front.`,
+    });
+  } else if (blank('essentials')) {
+    checks.push({
+      id: 'buffer',
+      label: 'Your safety net',
+      status: 'warn',
+      informational: true,
+      detail: 'Tell me what your monthly bills come to and I can say how long your savings would last.',
     });
   } else {
     const status =
       d.bufferMonths >= BUFFER_TARGET_MONTHS ? 'pass' : d.bufferMonths >= 1 ? 'warn' : 'fail';
-    const target =
+    const verdict =
       d.bufferMonths >= BUFFER_COMFORTABLE_MONTHS
-        ? 'comfortably clear of the 3–6 month guideline'
+        ? 'comfortably above the three months most advice suggests'
         : status === 'pass'
-          ? 'within the 3–6 month guideline'
-          : 'below the 3-month guideline';
+          ? 'at the three months most advice suggests'
+          : 'under the three months most advice suggests';
     checks.push({
       id: 'buffer',
-      label: 'Emergency fund',
+      label: 'Your safety net',
       status,
-      detail: `${months(d.bufferMonths)} of essentials left afterwards — ${target}.`,
+      detail: `Afterwards your savings would cover ${months(d.bufferMonths)} of bills — ${verdict}.`,
     });
   }
 
-  // 2. Does the recurring commitment fit the month without raiding savings?
+  // 2. Does the recurring cost fit the month without raiding savings?
   if (d.commitment > 0) {
     const status =
       d.commitment <= d.freeCash
@@ -212,38 +257,46 @@ function runChecks(d, categoryId, money = plainMoney) {
           : 'fail';
     const detail =
       status === 'pass'
-        ? `${money(d.commitment)} a month against ${money(d.freeCash)} of uncommitted income.`
+        ? `${money(d.commitment)} a month, out of the ${money(d.freeCash)} you have spare.`
         : status === 'warn'
-          ? 'It fits only by cutting into what you normally save each month.'
-          : `It exceeds your spare income by ${money(d.commitment - d.freeCash - d.monthlySaving)} a month.`;
-    checks.push({ id: 'cashflow', label: 'Monthly budget', status, detail });
+          ? 'It only fits if you stop putting money aside each month.'
+          : `It is ${money(d.commitment - d.freeCash - d.monthlySaving)} a month more than you have spare.`;
+    checks.push({ id: 'cashflow', label: 'Room in your month', status, detail });
   }
 
-  // 3. Share of take-home, against the ceiling for this kind of purchase.
+  // 3. Share of monthly income, against the ceiling for this kind of purchase.
   if (d.commitment > 0 && d.income > 0) {
     const status =
       d.shareOfIncome <= category.warn ? 'pass' : d.shareOfIncome <= category.fail ? 'warn' : 'fail';
     checks.push({
       id: 'share',
-      label: 'Share of take-home',
+      label: 'Share of your income',
       status,
-      detail: `${pct(d.shareOfIncome)} of what you bring home; the guideline for ${category.label.toLowerCase()} is ${pct(category.warn)}.`,
+      detail: `It would take ${pct(d.shareOfIncome)} of your monthly income. For ${category.phrase}, the usual advice is to stay under ${pct(category.warn)}.`,
     });
   }
 
-  // 4. Total debt load, the back-end half of the 28/36 rule.
-  if (d.income > 0 && (d.debtPayments > 0 || d.monthlyPayment > 0)) {
+  // 4. Total debt load — the back-end half of the 28/36 rule.
+  if (d.income > 0 && d.monthlyPayment > 0 && blank('debtPayments')) {
+    checks.push({
+      id: 'dti',
+      label: 'Everything you owe',
+      status: 'warn',
+      informational: true,
+      detail: 'Tell me what you already pay on other loans or cards, so I can add this on top.',
+    });
+  } else if (d.income > 0 && (d.debtPayments > 0 || d.monthlyPayment > 0)) {
     const status =
       d.debtToIncome <= DTI_COMFORTABLE ? 'pass' : d.debtToIncome <= DTI_LIMIT ? 'warn' : 'fail';
     checks.push({
       id: 'dti',
-      label: 'Total debt load',
+      label: 'Everything you owe',
       status,
-      detail: `${pct(d.debtToIncome)} of take-home goes to debt; underwriting treats ${pct(DTI_LIMIT)} as the ceiling.`,
+      detail: `Repayments would take ${pct(d.debtToIncome)} of your income. Lenders start refusing people around ${pct(DTI_LIMIT)}.`,
     });
   }
 
-  // 5. What the borrowing itself costs.
+  // 5. What the borrowing itself costs on top of the price.
   if (d.financed && d.borrowed > 0) {
     const status =
       d.interestRatio <= INTEREST_COMFORTABLE
@@ -253,9 +306,9 @@ function runChecks(d, categoryId, money = plainMoney) {
           : 'fail';
     checks.push({
       id: 'interest',
-      label: 'Cost of borrowing',
+      label: 'What borrowing adds',
       status,
-      detail: `${money(d.totalInterest)} in interest — ${pct(d.interestRatio)} on top of the price.`,
+      detail: `You would pay ${money(d.totalInterest)} in interest — ${pct(d.interestRatio)} on top of the price.`,
     });
   }
 
@@ -264,15 +317,15 @@ function runChecks(d, categoryId, money = plainMoney) {
     const tooLittleDown = d.downPaymentRatio < VEHICLE_MIN_DOWN;
     const tooLong = d.termMonths > VEHICLE_MAX_TERM_MONTHS;
     const problems = [];
-    if (tooLittleDown) problems.push(`${pct(d.downPaymentRatio)} down, against the 20% guideline`);
-    if (tooLong) problems.push(`${d.termMonths} months of financing, against the 48-month guideline`);
+    if (tooLittleDown) problems.push(`you are only putting ${pct(d.downPaymentRatio)} down, where 20% is the usual advice`);
+    if (tooLong) problems.push(`you would be paying for ${d.termMonths} months, where four years is the usual limit`);
     checks.push({
       id: 'structure',
-      label: 'Loan structure',
+      label: 'How the loan is set up',
       status: tooLittleDown && tooLong ? 'fail' : problems.length ? 'warn' : 'pass',
       detail: problems.length
-        ? `${problems.join('; ')}. A thin deposit over a long term is how people end up owing more than the car is worth.`
-        : 'Deposit and term both sit inside the 20/4/10 guideline.',
+        ? `${problems.join(', and ')}. A small deposit spread over a long loan is how people end up owing more than the car is worth.`
+        : 'Your deposit and how long you would pay for both sit inside the usual advice.',
     });
   }
 
@@ -286,9 +339,15 @@ export const VERDICTS = {
   no: { id: 'no', headline: 'No — not right now', tone: 'bad' },
 };
 
+/**
+ * An unanswered question is not a financial red flag, so it must not drag
+ * the verdict down the way a real warning would — otherwise leaving a
+ * single field blank could turn "yes" into "go in deliberately".
+ */
 function verdictFor(checks) {
-  const fails = checks.filter((c) => c.status === 'fail').length;
-  const warns = checks.filter((c) => c.status === 'warn').length;
+  const real = checks.filter((c) => !c.informational);
+  const fails = real.filter((c) => c.status === 'fail').length;
+  const warns = real.filter((c) => c.status === 'warn').length;
   if (fails >= 2) return VERDICTS.no;
   if (fails === 1) return VERDICTS.wait;
   if (warns >= 2) return VERDICTS.caution;
@@ -304,14 +363,14 @@ function verdictFor(checks) {
  * warning — a number described as comfortable should have no caveats
  * attached to it.
  */
-function comfortablePrice(input) {
+function comfortablePrice(input, answered) {
   const passesAt = (price) => {
     const trial = { ...input, price };
     // Keep the deposit proportional so the structure of the deal is preserved.
     if (input.financed && input.price > 0) {
       trial.downPayment = input.downPayment * (price / input.price);
     }
-    const checks = runChecks(derive(trial), input.category);
+    const checks = runChecks(derive(trial), input.category, plainMoney, answered);
     return checks.every((c) => c.informational || c.status === 'pass');
   };
 
@@ -349,8 +408,8 @@ function buildGuidance(input, d, checks, verdict, ceiling, money = plainMoney) {
     const shortfall = target - d.savings;
     if (shortfall > 0) {
       guidance.push({
-        label: 'Wait and save',
-        text: `You are ${money(shortfall)} short of buying this and keeping three months of essentials in reserve — about ${Math.ceil(shortfall / d.monthlySaving)} months at your current saving rate.`,
+        label: 'Wait and save first',
+        text: `You are ${money(shortfall)} short of buying this and still keeping three months of bills in reserve — about ${Math.ceil(shortfall / d.monthlySaving)} months away, at what you currently save.`,
       });
     }
   }
@@ -359,7 +418,7 @@ function buildGuidance(input, d, checks, verdict, ceiling, money = plainMoney) {
     const gap = d.commitment - d.freeCash;
     guidance.push({
       label: 'Close the monthly gap',
-      text: `The commitment runs ${money(gap)} a month past your spare income. A lower price, a larger deposit, or trimming the running costs are the only three levers.`,
+      text: `It runs ${money(gap)} a month past what you have spare. A lower price, a bigger deposit, or cutting the running costs are the only three ways to close that.`,
     });
   }
 
@@ -413,7 +472,7 @@ function buildGuidance(input, d, checks, verdict, ceiling, money = plainMoney) {
   if (annualShare > 0.05) {
     guidance.push({
       label: 'Sit on it',
-      text: 'This is over 5% of a year of take-home pay. Purchases this size are worth a 30-day pause — the ones that still matter after a month are the ones worth buying.',
+      text: 'This is over 5% of a year of what you bring home. Big purchases like this are worth a 30-day pause — the ones that still matter a month later are the ones worth buying.',
     });
   } else if (annualShare > 0.01) {
     guidance.push({
@@ -425,12 +484,20 @@ function buildGuidance(input, d, checks, verdict, ceiling, money = plainMoney) {
   return guidance;
 }
 
-/** The single entry point. */
-export function evaluate(input, money = plainMoney) {
+/**
+ * The single entry point.
+ * @param {Input} input
+ * @param {(n:number)=>string} money
+ * @param {Record<string, boolean>} answered which optional questions were
+ *   actually filled in, keyed by Input property name (savings, essentials,
+ *   debtPayments). An empty object treats every optional field as answered,
+ *   which matches the old all-zeros-is-fine behaviour.
+ */
+export function evaluate(input, money = plainMoney, answered = {}) {
   const d = derive(input);
-  const checks = runChecks(d, input.category, money);
+  const checks = runChecks(d, input.category, money, answered);
   const verdict = verdictFor(checks);
-  const ceiling = d.income > 0 && d.price > 0 ? comfortablePrice(input) : 0;
+  const ceiling = d.income > 0 && d.price > 0 ? comfortablePrice(input, answered) : 0;
 
   return {
     derived: d,

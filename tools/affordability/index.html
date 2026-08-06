@@ -52,78 +52,91 @@
     <div class="calc-grid">
       <!-- ---------- Inputs ---------- -->
       <form class="panel card" id="calc-form" autocomplete="off">
-        <h2 class="panel-title">The purchase</h2>
+        <h2 class="panel-title">What are you buying?</h2>
 
         <div class="field">
-          <label for="category">What is it?</label>
+          <label for="category">What kind of thing is it?</label>
           <select id="category"></select>
         </div>
 
         <div class="field">
-          <label for="price">Price</label>
-          <input type="number" id="price" min="0" step="any" inputmode="decimal" placeholder="0" />
+          <label for="price">How much does it cost?</label>
+          <input type="number" id="price" min="0" step="any" inputmode="decimal" placeholder="e.g. 25 000" />
+          <p class="hint">The full price on the tag, before any deposit.</p>
         </div>
 
         <div class="seg" role="radiogroup" aria-label="How are you paying?">
           <label class="seg-option">
             <input type="radio" name="pay" value="cash" checked />
-            <span>Pay in full</span>
+            <span>Pay it all now</span>
           </label>
           <label class="seg-option">
             <input type="radio" name="pay" value="financed" />
-            <span>Finance it</span>
+            <span>Pay it off over time</span>
           </label>
         </div>
 
         <div id="finance-fields" class="field-row three" hidden>
           <div class="field">
-            <label for="deposit">Deposit</label>
+            <label for="deposit">Deposit up front</label>
             <input type="number" id="deposit" min="0" step="any" inputmode="decimal" placeholder="0" />
           </div>
           <div class="field">
-            <label for="apr">Interest <span class="unit">% APR</span></label>
-            <input type="number" id="apr" min="0" step="any" inputmode="decimal" placeholder="0" />
+            <label for="apr">Interest rate <span class="unit">% APR</span></label>
+            <input type="number" id="apr" min="0" step="any" inputmode="decimal" placeholder="e.g. 7" />
+            <p class="hint">On the loan offer, or ask whoever is lending you the money.</p>
           </div>
           <div class="field">
-            <label for="term">Term <span class="unit">months</span></label>
+            <label for="term">How many months to pay it off</label>
             <input type="number" id="term" min="1" step="1" inputmode="numeric" placeholder="36" />
+            <p class="hint">36 months is 3 years, 48 is 4 years.</p>
           </div>
         </div>
 
         <div class="field">
-          <label for="ongoing">Running costs <span class="unit">per month</span></label>
+          <label for="ongoing">Does it cost anything extra each month?</label>
           <input type="number" id="ongoing" min="0" step="any" inputmode="decimal" placeholder="0" />
-          <p class="hint">Insurance, fuel, upkeep, fees — whatever this keeps costing after you buy it.</p>
+          <p class="hint" id="ongoing-hint">Most one-off things cost nothing extra. Insurance or a warranty would count.</p>
         </div>
 
-        <h2 class="panel-title">Your month</h2>
+        <h2 class="panel-title">A few questions about your money</h2>
+        <p class="section-note">
+          Only used to work out the answer below — it stays in your browser and is never sent anywhere.
+        </p>
 
-        <div class="field-row">
-          <div class="field">
-            <label for="income">Take-home pay</label>
-            <input type="number" id="income" min="0" step="any" inputmode="decimal" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="essentials">Essentials</label>
-            <input type="number" id="essentials" min="0" step="any" inputmode="decimal" placeholder="0" />
-          </div>
-        </div>
-        <p class="hint">Essentials means rent or mortgage, food, utilities, transport — the bills that do not pause.</p>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="debt">Debt payments</label>
-            <input type="number" id="debt" min="0" step="any" inputmode="decimal" placeholder="0" />
-          </div>
-          <div class="field">
-            <label for="saving">Saved each month</label>
-            <input type="number" id="saving" min="0" step="any" inputmode="decimal" placeholder="0" />
-          </div>
+        <div class="field">
+          <label for="income">How much lands in your account each month?</label>
+          <input type="number" id="income" min="0" step="any" inputmode="decimal" placeholder="e.g. 35 000" />
+          <p class="hint">What you're actually paid after tax — not your salary before deductions.</p>
         </div>
 
         <div class="field">
-          <label for="savings">Savings you could spend today</label>
-          <input type="number" id="savings" min="0" step="any" inputmode="decimal" placeholder="0" />
+          <label for="essentials">
+            What do your regular bills add up to?
+            <button type="button" class="quickfill" id="essentials-fill" hidden>
+              Not sure? Use about half my income
+            </button>
+          </label>
+          <input type="number" id="essentials" min="0" step="any" inputmode="decimal" placeholder="e.g. 17 500" />
+          <p class="hint">Rent or mortgage, food, transport, utilities — what you'd still owe even if you skipped this purchase.</p>
+        </div>
+
+        <div class="field">
+          <label for="debt">Do you already pay off any other loans or cards?</label>
+          <input type="number" id="debt" min="0" step="any" inputmode="decimal" placeholder="0" />
+          <p class="hint">Just the monthly repayment, not the total you still owe. Leave at 0 if none.</p>
+        </div>
+
+        <div class="field">
+          <label for="saving">How much do you usually set aside each month?</label>
+          <input type="number" id="saving" min="0" step="any" inputmode="decimal" placeholder="0" />
+          <p class="hint">Money you actively put into savings. 0 is a perfectly good answer.</p>
+        </div>
+
+        <div class="field">
+          <label for="savings">How much could you get your hands on today?</label>
+          <input type="number" id="savings" min="0" step="any" inputmode="decimal" placeholder="e.g. 40 000" />
+          <p class="hint">Money in the bank you could actually spend — not a pension or anything locked away.</p>
         </div>
 
         <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn">Clear everything</button>
@@ -133,9 +146,9 @@
       <section class="results" aria-live="polite">
         <div class="verdict card" id="verdict" data-tone="empty">
           <span class="verdict-badge" id="verdict-badge">Waiting</span>
-          <h2 class="verdict-headline" id="verdict-headline">Tell me about the purchase</h2>
+          <h2 class="verdict-headline" id="verdict-headline">Fill in the price and your income</h2>
           <p class="verdict-sub" id="verdict-sub">
-            A price and your monthly take-home pay are enough to get a first answer.
+            That's enough for a first answer — the rest sharpens it.
           </p>
         </div>
 
