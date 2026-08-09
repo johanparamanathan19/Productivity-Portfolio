@@ -40,4 +40,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/time/',
   },
+  {
+    name: 'Is This Offer Worth It?',
+    tagline: "Score any offer with Alex Hormozi's Value Equation — outcome, belief, delay, and effort.",
+    icon: '⚖️',
+    tags: ['Decisions', 'Offers', 'Value'],
+    status: 'live',
+    href: 'tools/value/',
+  },
 ];

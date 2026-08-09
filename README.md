@@ -22,6 +22,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | 🌱 | **[Pomodoro](tools/pomodoro/)** | Focus timer with tasks, statistics, synthesised background soundscapes, and a garden that grows as you work |
 | 💸 | **[Can I Afford This?](tools/affordability/)** | Runs a purchase past the affordability rules lenders and planners actually use, and tells you what would change the answer |
 | ⏳ | **[How Much Time Do I Spend?](tools/time/)** | Treats a year as a fixed budget of 8,760 hours, prices your time from your own salary and work hours, and charts where it actually goes |
+| ⚖️ | **[Is This Offer Worth It?](tools/value/)** | Scores any offer with Alex Hormozi's Value Equation — dream outcome, belief, time delay, and effort |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -49,7 +50,8 @@ Then visit <http://localhost:8000>.
 └── tools/
     ├── pomodoro/       index.html · pomodoro.css · js/ (12 modules)
     ├── affordability/  index.html · affordability.css · js/ (model + main)
-    └── time/           index.html · time.css · js/ (model + yearbar chart + main)
+    ├── time/           index.html · time.css · js/ (model + yearbar chart + main)
+    └── value/          index.html · value.css · js/ (model + main)
 ```
 
 Three layers, in load order:
@@ -75,6 +77,9 @@ Two parts are worth reading about before changing them:
 - **[The time model and its chart](docs/time-model.md)** — how the hourly rate
   is derived, and how the yearly overview's colours were chosen and validated
   rather than picked.
+- **[The Value Equation](docs/value-equation.md)** — how Alex Hormozi's
+  four-lever formula was turned into concrete questions instead of an
+  abstract 1–10 guess, and how the score and its weakest-lever advice work.
 
 ## Adding a tool
 
