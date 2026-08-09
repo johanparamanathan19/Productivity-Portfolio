@@ -27,15 +27,6 @@
 
 // ---------- Reference data ----------
 
-export const CURRENCIES = [
-  { code: 'NOK', locale: 'nb-NO' },
-  { code: 'USD', locale: 'en-US' },
-  { code: 'EUR', locale: 'de-DE' },
-  { code: 'GBP', locale: 'en-GB' },
-  { code: 'SEK', locale: 'sv-SE' },
-  { code: 'DKK', locale: 'da-DK' },
-];
-
 /**
  * Per-category ceilings on the new monthly commitment, as a share of
  * take-home pay. `warn` is the comfortable limit, `fail` the stretch limit.
