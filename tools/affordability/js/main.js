@@ -9,7 +9,8 @@ import { initTheme, mountThemePicker } from '../../../assets/js/theme.js';
 import { bindModals, openModal } from '../../../assets/js/modal.js';
 import { load, save } from '../../../assets/js/store.js';
 import { showToast } from '../../../assets/js/toast.js';
-import { CATEGORIES, CURRENCIES, evaluate } from './model.js';
+import { CURRENCIES, buildFormatter } from '../../../assets/js/currency.js';
+import { CATEGORIES, evaluate } from './model.js';
 
 const STORAGE_KEY = 'afford.inputs';
 
@@ -58,16 +59,6 @@ const NUMBER_FIELDS = [
 // ---------- Formatting ----------
 
 let money = (n) => String(Math.round(n));
-
-function buildFormatter(code) {
-  const currency = CURRENCIES.find((c) => c.code === code) || CURRENCIES[0];
-  const formatter = new Intl.NumberFormat(currency.locale, {
-    style: 'currency',
-    currency: currency.code,
-    maximumFractionDigits: 0,
-  });
-  return (n) => formatter.format(Math.round(n || 0));
-}
 
 const hours = (n) =>
   n >= 160 ? `${(n / 160).toFixed(1)} months of work` : `${Math.round(n)} hours of work`;

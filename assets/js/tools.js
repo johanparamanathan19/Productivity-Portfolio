@@ -32,4 +32,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/affordability/',
   },
+  {
+    name: 'How Much Time Do I Spend?',
+    tagline: 'See where your 8,760 hours a year actually go, and what they are worth.',
+    icon: '⏳',
+    tags: ['Time', 'Life audit', 'Money'],
+    status: 'live',
+    href: 'tools/time/',
+  },
 ];
