@@ -48,4 +48,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/value/',
   },
+  {
+    name: 'Buy It, or Invest It?',
+    tagline: 'Chart what a purchase costs you against leaving the same money in an index fund.',
+    icon: '📈',
+    tags: ['Money', 'Investing', 'Decisions'],
+    status: 'live',
+    href: 'tools/invest/',
+  },
 ];
