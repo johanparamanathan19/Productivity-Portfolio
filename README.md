@@ -23,6 +23,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | 💸 | **[Can I Afford This?](tools/affordability/)** | Runs a purchase past the affordability rules lenders and planners actually use, and tells you what would change the answer |
 | ⏳ | **[How Much Time Do I Spend?](tools/time/)** | Treats a year as a fixed budget of 8,760 hours, prices your time from your own salary and work hours, and charts where it actually goes |
 | ⚖️ | **[Is This Offer Worth It?](tools/value/)** | Scores any offer with Alex Hormozi's Value Equation — dream outcome, belief, time delay, and effort |
+| 📈 | **[Buy It, or Invest It?](tools/invest/)** | Charts a purchase against leaving the same money in an index fund, in today's money, with the resale value you'd keep |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -51,7 +52,8 @@ Then visit <http://localhost:8000>.
     ├── pomodoro/       index.html · pomodoro.css · js/ (12 modules)
     ├── affordability/  index.html · affordability.css · js/ (model + main)
     ├── time/           index.html · time.css · js/ (model + yearbar chart + main)
-    └── value/          index.html · value.css · js/ (model + main)
+    ├── value/          index.html · value.css · js/ (model + main)
+    └── invest/         index.html · invest.css · js/ (model + growth chart + main)
 ```
 
 Three layers, in load order:
@@ -80,6 +82,9 @@ Two parts are worth reading about before changing them:
 - **[The Value Equation](docs/value-equation.md)** — how Alex Hormozi's
   four-lever formula was turned into concrete questions instead of an
   abstract 1–10 guess, and how the score and its weakest-lever advice work.
+- **[Buying it vs. investing it](docs/invest-vs-buy.md)** — why the whole model
+  runs in real terms, how the uncertainty band and depreciation keep the
+  comparison honest, and how the chart's colours were validated.
 
 ## Adding a tool
 
