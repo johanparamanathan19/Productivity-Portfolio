@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f7d5b" />
+  <meta name="description" content="Score any offer with Alex Hormozi's Value Equation: dream outcome, likelihood, time delay, and effort." />
+  <title>Is This Offer Worth It? — the Value Equation</title>
+
+  <!-- Apply the saved theme before first paint. See assets/js/theme.js. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('site.theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* storage unavailable — the default theme stands */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="value.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%96%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <div class="grain"></div>
+  </div>
+
+  <main class="value-tool">
+    <header class="topbar">
+      <a class="back-link" href="../../" aria-label="Back to all tools">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span class="mark" aria-hidden="true">⚖️</span>
+        <span class="name">Is This Offer Worth It?</span>
+      </a>
+      <div class="topbar-actions">
+        <button id="theme-btn" class="icon-btn" title="Change theme" aria-label="Change theme">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <p class="lede">
+      Alex Hormozi's Value Equation from <em>$100M Offers</em>: value goes up with the outcome you want
+      and how much you believe it'll happen, and down with how long it takes and what it costs you to
+      get there. Score whatever you're weighing below — a course, a membership, a job offer, anything.
+    </p>
+
+    <div class="value-grid">
+      <!-- ---------- Inputs ---------- -->
+      <form class="panel card" id="value-form" autocomplete="off">
+        <div class="field">
+          <label for="offer-name">What's the offer? <span class="unit">(optional)</span></label>
+          <input type="text" id="offer-name" maxlength="60" placeholder="e.g. 12-week coaching program" />
+        </div>
+
+        <div class="example-row">
+          <span class="example-label">Not sure how this works? Try an example</span>
+          <div class="example-btns" id="example-btns"></div>
+        </div>
+
+        <h2 class="panel-title">Dream Outcome</h2>
+        <p class="panel-sub">How much do you actually want the transformation this promises — not the product itself, the result?</p>
+        <div class="slider-field">
+          <input type="range" id="dream-outcome" min="1" max="10" step="1" value="5" aria-describedby="dream-outcome-desc" />
+          <div class="slider-readout"><span class="slider-value" id="dream-outcome-value">5</span><span class="slider-max">/10</span></div>
+        </div>
+        <p class="slider-desc" id="dream-outcome-desc"></p>
+
+        <h2 class="panel-title">Perceived Likelihood of Achievement</h2>
+        <p class="panel-sub">How much do you actually believe this specific offer will work — for you, not "in general"?</p>
+        <div class="slider-field">
+          <input type="range" id="likelihood" min="1" max="10" step="1" value="5" aria-describedby="likelihood-desc" />
+          <div class="slider-readout"><span class="slider-value" id="likelihood-value">5</span><span class="slider-max">/10</span></div>
+        </div>
+        <p class="slider-desc" id="likelihood-desc"></p>
+        <div class="infobox">
+          <span class="infobox-icon" aria-hidden="true">i</span>
+          <p><strong>What raises this:</strong> guarantees, specific results from people like you, credentials, a free trial. <strong>What lowers it:</strong> vague claims, no proof, pressure to decide fast.</p>
+        </div>
+
+        <h2 class="panel-title">Time Delay</h2>
+        <p class="panel-sub">How long until you'd actually see the main result — not until you start, until it shows up?</p>
+        <div class="field-row delay-row">
+          <input type="number" id="delay-value" min="0" step="any" inputmode="decimal" placeholder="e.g. 6" aria-label="Time delay amount" />
+          <select id="delay-unit" aria-label="Time delay unit"></select>
+        </div>
+        <p class="slider-desc" id="delay-desc"></p>
+
+        <h2 class="panel-title">Effort &amp; Sacrifice</h2>
+        <p class="panel-sub">Check anything this genuinely asks of you, beyond the price.</p>
+        <ul class="effort-list" id="effort-list"></ul>
+        <p class="slider-desc" id="effort-desc"></p>
+
+        <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn" style="width:100%;margin-top:16px">Clear everything</button>
+      </form>
+
+      <!-- ---------- Results ---------- -->
+      <section class="results" aria-live="polite">
+        <div class="verdict card" id="verdict" data-tone="ok">
+          <span class="verdict-badge" id="verdict-badge">Fair</span>
+          <h2 class="verdict-headline"><span id="verdict-offer"></span><span id="verdict-headline">Could go either way</span></h2>
+          <p class="verdict-sub" id="verdict-sub">Nothing here is clearly wrong — but nothing makes it obvious either.</p>
+        </div>
+
+        <div class="figures" id="figures"></div>
+
+        <h3 class="group-title">How each part scores</h3>
+        <div class="card lever-card">
+          <ul class="lever-list" id="lever-list"></ul>
+          <p class="equation-row" id="equation-row"></p>
+        </div>
+
+        <div id="advice-wrap">
+          <h3 class="group-title">What's holding this back</h3>
+          <ul class="guidance" id="advice-list"></ul>
+        </div>
+
+        <p class="disclaimer">
+          This is Alex Hormozi's Value Equation from <em>$100M Offers</em> (2021) — a mental model for
+          judging offers, not a scientifically validated formula. The scores above are your own honest
+          guesses, not measurements; treat the result as a structured gut-check, not a verdict. Nothing
+          you type leaves your device.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Theme picker -->
+  <div class="modal-backdrop" id="theme-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="theme-title">
+      <div class="modal-head">
+        <h2 id="theme-title">Theme</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="ctrl ctrl-primary text-btn" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
