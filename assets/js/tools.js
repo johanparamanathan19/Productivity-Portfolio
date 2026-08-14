@@ -64,4 +64,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/runway/',
   },
+  {
+    name: 'When Could I Stop?',
+    tagline: 'Your financial independence number, the year you would reach it, and what one habit changes.',
+    icon: '🏁',
+    tags: ['Money', 'Investing', 'Independence'],
+    status: 'live',
+    href: 'tools/fi/',
+  },
 ];

@@ -25,6 +25,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | ⚖️ | **[Is This Offer Worth It?](tools/value/)** | Scores any offer with Alex Hormozi's Value Equation — dream outcome, belief, time delay, and effort |
 | 📈 | **[Buy It, or Invest It?](tools/invest/)** | Charts a purchase against leaving the same money in an index fund, in today's money, with the resale value you'd keep |
 | 🪂 | **[How Long Could I Last?](tools/runway/)** | Divides your savings by your real monthly burn and shows the answer as months of runway, with a bar and what skipping one purchase is worth |
+| 🏁 | **[When Could I Stop?](tools/fi/)** | Turns a year of spending into a financial independence target from the Trinity Study's 4% rule, charts when you would reach it, and prices what one permanent cut in spending is worth |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -55,7 +56,8 @@ Then visit <http://localhost:8000>.
     ├── time/           index.html · time.css · js/ (model + yearbar chart + main)
     ├── value/          index.html · value.css · js/ (model + main)
     ├── invest/         index.html · invest.css · js/ (model + growth chart + main)
-    └── runway/         index.html · runway.css · js/ (model + bar + main)
+    ├── runway/         index.html · runway.css · js/ (model + bar + main)
+    └── fi/             index.html · fi.css · js/ (model + accumulation chart + main)
 ```
 
 Three layers, in load order:
@@ -90,6 +92,9 @@ Two parts are worth reading about before changing them:
 - **[The runway model](docs/runway.md)** — why the burn rate is derived from
   income minus savings rather than trusted essentials alone, and why the bar
   is capped at 24 months.
+- **[Financial independence](docs/financial-independence.md)** — what the
+  Trinity Study actually found, why the withdrawal rate is a slider rather
+  than a hardcoded 25×, and why the target is drawn as a band.
 
 ## Adding a tool
 
