@@ -1,0 +1,437 @@
+/* ============================================================
+   When Could I Stop? — tool-specific styles
+   Tokens, chrome, buttons, and modals come from assets/css/.
+   ============================================================ */
+
+.fi-tool {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: rise 0.7s var(--ease-out) both;
+}
+
+.lede {
+  margin: 0;
+  padding: 0 4px;
+  max-width: 780px;
+  color: var(--text-dim);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.fi-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 20px;
+  align-items: start;
+}
+
+/* ---------- Chart palette --------------------------------------
+   Slot 1 of the project's validated categorical palette for the
+   portfolio line, used verbatim from tools/invest/invest.css so the
+   two money charts stay visually consistent. The target band is
+   slot 2 at low opacity — it is a threshold, not a second series,
+   but it needs to be distinguishable from the line at a glance.
+   Lavender's orange lands at 2.58:1 against its surface, below 3:1,
+   which is why the direct end-label and the table view are required
+   rather than optional. */
+.fi-tool {
+  --series-portfolio: #3987e5; /* slot 1, blue   */
+  --series-target: #d95926;    /* slot 2, orange */
+  --fc-surface: var(--bg-1);
+}
+[data-theme='lavender'] .fi-tool {
+  --series-portfolio: #2a78d6;
+  --series-target: #eb6834;
+}
+
+.currency-select {
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ---------- Input panel ------------------------------------ */
+.panel { padding: 26px; }
+
+.panel-title { margin: 0 0 14px; font-size: 17px; font-weight: 500; }
+.panel-title:not(:first-child) {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--stroke);
+}
+
+.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; min-width: 0; }
+.field label { font-size: 13px; font-weight: 500; color: var(--text-dim); }
+.field label strong { color: var(--text); font-weight: 600; }
+.field .unit { opacity: 0.7; font-weight: 400; }
+
+.field input[type='number'],
+.field input[type='text'],
+.field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 15.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.field input::placeholder { color: var(--text-dim); font-weight: 400; }
+.field input:focus, .field select:focus { border-color: var(--accent); background: var(--surface-2); }
+.field input[type='number']::-webkit-outer-spin-button,
+.field input[type='number']::-webkit-inner-spin-button { appearance: none; margin: 0; }
+.field input[type='number'] { -moz-appearance: textfield; }
+
+.hint { margin: 0; color: var(--text-dim); font-size: 12.5px; line-height: 1.55; }
+
+/* Withdrawal-rate slider */
+.field input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track);
+  outline: none;
+}
+.field input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: 3px solid var(--bg-1);
+  box-shadow: 0 4px 12px -4px var(--accent);
+  cursor: pointer;
+}
+.field input[type='range']::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: 3px solid var(--bg-1);
+  box-shadow: 0 4px 12px -4px var(--accent);
+  cursor: pointer;
+}
+.field input[type='range']::-moz-range-track { height: 6px; border-radius: 999px; background: var(--track); }
+
+.infobox {
+  display: flex;
+  gap: 10px;
+  padding: 11px 13px;
+  margin-top: 4px;
+  border: 1px solid var(--stroke);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.infobox p { margin: 0; color: var(--text-dim); font-size: 12.5px; line-height: 1.6; }
+.infobox strong { color: var(--text); font-weight: 600; }
+.infobox a { color: var(--accent); font-weight: 600; }
+.infobox-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 17px; height: 17px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: var(--font-display);
+}
+
+.reset-btn { width: 100%; margin-top: 8px; }
+
+/* ---------- Results ------------------------------------------ */
+.results { display: flex; flex-direction: column; gap: 18px; }
+
+.verdict { padding: 26px; border-left: 4px solid var(--verdict-color, var(--stroke)); transition: border-color 0.4s; }
+.verdict[data-tone='good'] { --verdict-color: var(--good); }
+.verdict[data-tone='ok'] { --verdict-color: var(--ok); }
+.verdict[data-tone='bad'] { --verdict-color: var(--bad); }
+.verdict-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--verdict-color, var(--text-dim)) 20%, transparent);
+  color: var(--verdict-color, var(--text-dim));
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.verdict-headline { margin: 0 0 10px; font-size: clamp(22px, 3.2vw, 28px); font-weight: 400; line-height: 1.2; }
+.verdict-sub { margin: 0; color: var(--text-dim); font-size: 14.5px; line-height: 1.6; }
+
+/* ---------- The hero number ------------------------------------ */
+.hero-card {
+  padding: 30px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-top: 4px solid var(--verdict-color, var(--stroke));
+  transition: border-color 0.4s;
+}
+.hero-card[data-tone='good'] { --verdict-color: var(--good); }
+.hero-card[data-tone='ok'] { --verdict-color: var(--ok); }
+.hero-card[data-tone='bad'] { --verdict-color: var(--bad); }
+
+.hero-eyebrow {
+  color: var(--text-dim);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.hero-number {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 7.5vw, 62px);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text);
+}
+.hero-label { margin-top: 8px; color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+.hero-range {
+  margin: 10px 0 0;
+  max-width: 460px;
+  color: var(--text-dim);
+  font-size: 12.5px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* Progress toward the target */
+.progress-wrap { width: 100%; max-width: 480px; margin-top: 22px; }
+.progress-track {
+  position: relative;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--track);
+  border: 1px solid var(--stroke);
+  overflow: hidden;
+}
+.progress-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: var(--fill-pct, 0%);
+  background: var(--fill-color, var(--accent));
+  border-radius: 999px;
+  transition: width 0.5s var(--ease-out), background 0.4s;
+}
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Figures --------------------------------------------- */
+.figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.figure { padding: 16px; border: 1px solid var(--stroke); border-radius: 16px; background: var(--surface); }
+.figure-value { font-family: var(--font-display); font-size: 21px; font-weight: 400; line-height: 1.1; }
+.figure-label { margin-top: 6px; font-size: 12.5px; font-weight: 500; }
+.figure-note { margin-top: 2px; color: var(--text-dim); font-size: 11.5px; line-height: 1.45; }
+
+.group-title { margin: 4px 4px 0; font-size: 15px; font-weight: 500; }
+
+/* ---------- The chart ----------------------------------------- */
+.chart-card { padding: 18px 20px 14px; background: var(--fc-surface); }
+.chart-wrap { position: relative; }
+
+.fi-chart { display: block; width: 100%; height: auto; overflow: visible; }
+
+.fc-grid line { stroke: var(--stroke); stroke-width: 1; }
+.fc-baseline { stroke: var(--text-dim); stroke-width: 1; opacity: 0.5; }
+.fc-axis text { fill: var(--text-dim); font-family: var(--font-ui); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* The target is a zone, not a line — the band carries that meaning. */
+.fc-target-band { fill: var(--series-target); opacity: 0.13; }
+.fc-target-edge { stroke: var(--series-target); stroke-width: 1; stroke-dasharray: 5 4; opacity: 0.65; }
+.fc-target-label { fill: var(--series-target); font-family: var(--font-ui); font-size: 11.5px; font-weight: 600; }
+
+.fc-line { fill: none; stroke: var(--series-portfolio); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+
+.fc-dot { fill: var(--series-portfolio); stroke: var(--fc-surface); stroke-width: 2; }
+
+/* A genuine threshold, not a gridline — dashing is carrying meaning here. */
+.fc-crossing { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.65; }
+.fc-crossing-label { fill: var(--text-dim); font-family: var(--font-ui); font-size: 10.5px; }
+
+.fc-endlabel { fill: var(--text); font-family: var(--font-ui); font-size: 12px; font-weight: 600; }
+
+.fc-hairline { stroke: var(--text-dim); stroke-width: 1; }
+.fc-hover[hidden] { display: none; }
+.fc-overlay { fill: transparent; cursor: crosshair; }
+.fc-overlay:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.fc-tooltip {
+  position: absolute;
+  top: 6px;
+  z-index: 5;
+  min-width: 148px;
+  padding: 10px 12px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: var(--bg-2);
+  box-shadow: var(--shadow-soft);
+  pointer-events: none;
+  transition: left 0.06s linear;
+}
+.fc-tooltip[hidden] { display: none; }
+.fc-tip-head { color: var(--text-dim); font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.fc-tip-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-left: 14px;
+  position: relative;
+  font-size: 11.5px;
+}
+.fc-tip-row + .fc-tip-row { margin-top: 3px; }
+/* Line keys, not boxes — at tooltip density a filled square is too much ink. */
+.fc-tip-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 7px;
+  width: 10px; height: 2px;
+  border-radius: 2px;
+  background: var(--key-color, transparent);
+}
+.fc-tip-row.fc-portfolio { --key-color: var(--series-portfolio); }
+.fc-tip-row.fc-diff { --key-color: var(--text-dim); }
+.fc-tip-row strong { color: var(--text); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.fc-tip-row span { color: var(--text-dim); }
+
+/* ---------- Legend --------------------------------------------- */
+.fc-legend { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.fc-legend-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 12.5px;
+}
+/* Legends mirror the mark: a line-key for the line, a swatch for the band. */
+.fc-key { width: 14px; height: 2px; border-radius: 2px; background: var(--text-dim); transform: translateY(-3px); }
+.fc-key.fc-portfolio { background: var(--series-portfolio); }
+.fc-key.fc-band-key {
+  height: 10px;
+  border-radius: 3px;
+  background: var(--series-target);
+  opacity: 0.28;
+  transform: translateY(0);
+}
+.fc-legend-name { color: var(--text); font-weight: 500; }
+.fc-legend-fig { color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- Table view ------------------------------------------ */
+.table-toggle {
+  margin-top: 14px;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.table-toggle:hover { opacity: 0.75; }
+
+.table-wrap { margin-top: 10px; max-height: 260px; overflow: auto; }
+.table-wrap[hidden] { display: none; }
+.fc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.fc-table th, .fc-table td { padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--stroke); }
+.fc-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--fc-surface);
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 11px;
+}
+.fc-table tbody th { text-align: left; color: var(--text-dim); font-weight: 500; }
+.fc-table td { color: var(--text); }
+
+/* ---------- The spending lever ----------------------------------- */
+.lever-card { padding: 20px; }
+.lever-card .field { margin-bottom: 12px; }
+
+.lever-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--surface);
+}
+.lever-result p { margin: 0; color: var(--text-dim); font-size: 13.5px; line-height: 1.6; }
+.lever-result strong {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+}
+.lever-empty { opacity: 0.85; }
+.lever-compare {
+  padding-top: 8px;
+  border-top: 1px solid var(--stroke);
+  font-size: 12.5px !important;
+  opacity: 0.9;
+}
+
+/* ---------- Guidance -------------------------------------------- */
+.guidance { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.guidance li {
+  padding: 14px 16px;
+  border: 1px solid var(--stroke);
+  border-left: 3px solid var(--accent);
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-dim);
+}
+.guidance strong { display: block; margin-bottom: 3px; color: var(--text); font-size: 13px; font-weight: 600; }
+.guidance a { color: var(--accent); font-weight: 600; }
+
+.disclaimer { margin: 0; color: var(--text-dim); font-size: 11.5px; line-height: 1.65; opacity: 0.8; }
+
+/* ---------- Responsive -------------------------------------- */
+@media (max-width: 900px) {
+  .fi-grid { grid-template-columns: 1fr; }
+  .results { order: -1; }
+}
+@media (max-width: 480px) {
+  .panel { padding: 20px; }
+  .verdict { padding: 20px; }
+  .hero-card { padding: 24px 18px; }
+  .chart-card { padding: 14px 12px 12px; }
+  .back-link .name { font-size: 17px; }
+  .fc-legend-row { grid-template-columns: 14px 1fr; row-gap: 2px; }
+  .fc-legend-fig { grid-column: 2; text-align: left; }
+}

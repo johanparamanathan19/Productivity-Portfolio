@@ -10,6 +10,12 @@ on `main` — so entries are grouped by date rather than version number.
 
 ### Added
 
+- **When Could I Stop?** — the financial independence number from the Trinity
+  Study's 4% rule, plus the year you would reach it. The withdrawal rate is a
+  3–5% slider rather than a hardcoded 25×, and the chart draws the target as a
+  band between the 4% and 3% figures, because that dispute is the real
+  uncertainty in the model. Includes a lever section pricing a permanent cut in
+  spending against a one-off windfall of the same size.
 - **How Long Could I Last?** — savings divided by real monthly burn, shown as
   months of runway with a capped gauge bar. The burn rate is derived from
   income minus what you save, not just stated essentials, and the gap between
