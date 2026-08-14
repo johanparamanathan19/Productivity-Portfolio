@@ -56,4 +56,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/invest/',
   },
+  {
+    name: 'How Long Could I Last?',
+    tagline: 'Savings divided by real monthly burn — freedom measured in months, not vibes.',
+    icon: '🪂',
+    tags: ['Money', 'Runway', 'Decisions'],
+    status: 'live',
+    href: 'tools/runway/',
+  },
 ];

@@ -10,6 +10,11 @@ on `main` — so entries are grouped by date rather than version number.
 
 ### Added
 
+- **How Long Could I Last?** — savings divided by real monthly burn, shown as
+  months of runway with a capped gauge bar. The burn rate is derived from
+  income minus what you save, not just stated essentials, and the gap between
+  the two is surfaced as its own figure. Includes a skipped-purchase section
+  comparing a one-off saving against cancelling something recurring.
 - **Pomodoro: a "How to use this" guide**, covering the method step by step and
   the research behind why it works — with an explicit note that the 25/5 split
   itself is not a research finding.

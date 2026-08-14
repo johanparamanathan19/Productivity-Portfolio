@@ -24,6 +24,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | ⏳ | **[How Much Time Do I Spend?](tools/time/)** | Treats a year as a fixed budget of 8,760 hours, prices your time from your own salary and work hours, and charts where it actually goes |
 | ⚖️ | **[Is This Offer Worth It?](tools/value/)** | Scores any offer with Alex Hormozi's Value Equation — dream outcome, belief, time delay, and effort |
 | 📈 | **[Buy It, or Invest It?](tools/invest/)** | Charts a purchase against leaving the same money in an index fund, in today's money, with the resale value you'd keep |
+| 🪂 | **[How Long Could I Last?](tools/runway/)** | Divides your savings by your real monthly burn and shows the answer as months of runway, with a bar and what skipping one purchase is worth |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -53,7 +54,8 @@ Then visit <http://localhost:8000>.
     ├── affordability/  index.html · affordability.css · js/ (model + main)
     ├── time/           index.html · time.css · js/ (model + yearbar chart + main)
     ├── value/          index.html · value.css · js/ (model + main)
-    └── invest/         index.html · invest.css · js/ (model + growth chart + main)
+    ├── invest/         index.html · invest.css · js/ (model + growth chart + main)
+    └── runway/         index.html · runway.css · js/ (model + bar + main)
 ```
 
 Three layers, in load order:
@@ -85,6 +87,9 @@ Two parts are worth reading about before changing them:
 - **[Buying it vs. investing it](docs/invest-vs-buy.md)** — why the whole model
   runs in real terms, how the uncertainty band and depreciation keep the
   comparison honest, and how the chart's colours were validated.
+- **[The runway model](docs/runway.md)** — why the burn rate is derived from
+  income minus savings rather than trusted essentials alone, and why the bar
+  is capped at 24 months.
 
 ## Adding a tool
 
