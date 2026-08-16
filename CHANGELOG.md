@@ -10,6 +10,13 @@ on `main` — so entries are grouped by date rather than version number.
 
 ### Added
 
+- **Debt Escape Plan** — enter what you owe and what you can put toward it
+  each month; charts highest-rate-first against smallest-balance-first, plus
+  a minimums-only baseline, and prices the gap between them in interest,
+  months, and (given an hourly wage) life-hours. Runs in nominal terms, a
+  deliberate break from the rest of the suite's real-terms modelling, because
+  a debt contract is nominal. Includes a rate-cut lever, since cutting the
+  rate on the worst debt usually beats choosing a payoff order.
 - **When Could I Stop?** — the financial independence number from the Trinity
   Study's 4% rule, plus the year you would reach it. The withdrawal rate is a
   3–5% slider rather than a hardcoded 25×, and the chart draws the target as a
