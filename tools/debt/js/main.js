@@ -166,7 +166,11 @@ function debtRowNode(debt) {
     el.addDebtBtn.focus();
   });
 
-  head.append(kindSelect, labelInput, removeBtn);
+  // Name first, then kind — you name a debt before you classify it, and the
+  // name field needs the room more: the kind select is now a fixed, narrow
+  // width (see debt.css) since a native <select> auto-sizes to its widest
+  // *option*, not the selected one, and used to crowd the name field out.
+  head.append(labelInput, kindSelect, removeBtn);
 
   const fields = document.createElement('div');
   fields.className = 'debt-row-fields';
@@ -329,11 +333,13 @@ function renderFigures(cmp) {
     items.push(figure('If you only paid minimums', `${money(last.total)} still owed`, `after ${last.month} months — this plan finishes`));
   }
 
-  if (cmp.debts.length > 1) {
+  if (cmp.debts.length > 1 && cmp.strategyGapInterest > 0) {
     items.push(figure(
       'Snowball costs extra',
       money(cmp.strategyGapInterest),
-      `and ${cmp.strategyGapMonths} more month${cmp.strategyGapMonths === 1 ? '' : 's'}`,
+      cmp.strategyGapMonths > 0
+        ? `and ${cmp.strategyGapMonths} more month${cmp.strategyGapMonths === 1 ? '' : 's'}`
+        : 'finishes in about the same time',
     ));
   }
 
@@ -424,9 +430,12 @@ function renderGuidance(cmp) {
   ));
 
   if (cmp.boost && cmp.boost.interestSaved > 0) {
+    const sooner = cmp.boost.monthsSaved > 0
+      ? ` and finish ${cmp.boost.monthsSaved} month${cmp.boost.monthsSaved === 1 ? '' : 's'} sooner`
+      : '';
     items.push(guidanceItem(
       'Paying more usually beats both',
-      `Putting ${money(cmp.boost.extraPerMonth)} more toward this each month (${cmp.boost.pct}% more) would save ${money(cmp.boost.interestSaved)} and finish ${cmp.boost.monthsSaved} month${cmp.boost.monthsSaved === 1 ? '' : 's'} sooner — often more than the strategy toggle moves either number.`,
+      `Putting ${money(cmp.boost.extraPerMonth)} more toward this each month (${cmp.boost.pct}% more) would save ${money(cmp.boost.interestSaved)}${sooner} — often more than the strategy toggle moves either number.`,
     ));
   }
 
@@ -441,10 +450,10 @@ function renderGuidance(cmp) {
     ));
   }
 
-  if (cmp.debts.length > 1) {
+  if (cmp.debts.length > 1 && cmp.strategyGapInterest > 0) {
     items.push(guidanceItem(
       'Snowball is not just a feeling',
-      `Attacking the smallest balance first is a studied effect on whether people actually finish, not just a preference — paying ${money(cmp.strategyGapInterest)} more here for that edge is a real, considered trade, not a mistake.`,
+      `Attacking the smallest balance first is a studied effect on whether people actually finish, not just a preference — the extra cost above is a real, considered trade for that edge, not a mistake.`,
     ));
   }
 
@@ -464,21 +473,15 @@ function renderGuidance(cmp) {
   el.guidance.replaceChildren(...items);
 }
 
+// The exact figures (minimums shortfall, snowball's cost) already appear a
+// breath below in the figure boxes — the verdict's job is to say what it
+// means, not to repeat the numbers a second time before the reader gets
+// there. One clean sentence here, not a restatement.
 function setVerdict(cmp) {
   el.verdict.dataset.tone = cmp.verdict.tone;
   el.verdictBadge.textContent = cmp.verdict.badge;
   el.verdictHeadline.textContent = cmp.verdict.headline;
-
-  if (!cmp.feasible) {
-    const shortfall = Math.max(0, cmp.minTotal - cmp.budget);
-    el.verdictSub.textContent = `${cmp.verdict.sub} Minimums come to ${money(cmp.minTotal)} a month — ${money(shortfall)} more than you have budgeted.`;
-    return;
-  }
-
-  const extra = cmp.debts.length > 1
-    ? ` Snowball costs an extra ${money(cmp.strategyGapInterest)} and ${cmp.strategyGapMonths} month${cmp.strategyGapMonths === 1 ? '' : 's'}.`
-    : '';
-  el.verdictSub.textContent = `${cmp.verdict.sub}${extra}`;
+  el.verdictSub.textContent = cmp.verdict.sub;
 }
 
 function render() {

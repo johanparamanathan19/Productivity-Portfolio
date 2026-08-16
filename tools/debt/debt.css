@@ -177,9 +177,16 @@
   background: var(--surface);
 }
 .debt-row-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+/* A native <select> auto-sizes its closed box to its WIDEST option, not the
+   selected one — Chromium does this so the box doesn't jump size as you pick
+   a different option. Left at width:auto, that meant every row's dropdown
+   ballooned to fit "Store card / Buy now, pay later" (≈249px) even while
+   showing "Credit card," starving the name field beside it down to ~115px.
+   A fixed width plus ellipsis fixes the closed box; the open dropdown list
+   still shows every option's full text untruncated. */
 .debt-kind {
   flex: none;
-  width: auto;
+  width: 132px;
   padding: 8px 10px;
   border: 1px solid var(--stroke);
   border-radius: 10px;
@@ -189,6 +196,9 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .debt-label {
   flex: 1;
@@ -323,8 +333,12 @@
 
 .group-title { margin: 4px 4px 0; font-size: 15px; font-weight: 500; }
 
-.figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-.figure { padding: 16px; border: 1px solid var(--stroke); border-radius: 16px; background: var(--surface); }
+/* Flex, not grid — a grid's auto-fit tracks are shared across every row, so a
+   lone item on the last row sits stranded in column 1 with empty cells beside
+   it. Flex-wrap distributes each row's leftover space independently, so a
+   short last row still stretches to fill the width like every row above it. */
+.figures { display: flex; flex-wrap: wrap; gap: 12px; }
+.figure { flex: 1 1 140px; padding: 16px; border: 1px solid var(--stroke); border-radius: 16px; background: var(--surface); }
 .figure-value { font-family: var(--font-display); font-size: 21px; font-weight: 400; line-height: 1.1; }
 .figure-label { margin-top: 6px; font-size: 12.5px; font-weight: 500; }
 .figure-note { margin-top: 2px; color: var(--text-dim); font-size: 11.5px; line-height: 1.45; }
@@ -518,7 +532,7 @@ circle.pc-dot.pc-snowball { fill: var(--series-snowball); }
 @media (max-width: 560px) {
   .debt-row-fields { grid-template-columns: 1fr; }
   .debt-row-head { flex-wrap: wrap; }
-  .debt-label { order: 1; flex-basis: 100%; }
+  .debt-label { flex-basis: 100%; }
 }
 @media (max-width: 480px) {
   .panel { padding: 20px; }
