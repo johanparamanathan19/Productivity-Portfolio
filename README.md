@@ -26,6 +26,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | 📈 | **[Buy It, or Invest It?](tools/invest/)** | Charts a purchase against leaving the same money in an index fund, in today's money, with the resale value you'd keep |
 | 🪂 | **[How Long Could I Last?](tools/runway/)** | Divides your savings by your real monthly burn and shows the answer as months of runway, with a bar and what skipping one purchase is worth |
 | 🏁 | **[When Could I Stop?](tools/fi/)** | Turns a year of spending into a financial independence target from the Trinity Study's 4% rule, charts when you would reach it, and prices what one permanent cut in spending is worth |
+| 🪜 | **[Debt Escape Plan](tools/debt/)** | Charts avalanche vs. snowball payoff for whatever you owe, and prices the interest saved in money and life-hours |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -57,7 +58,8 @@ Then visit <http://localhost:8000>.
     ├── value/          index.html · value.css · js/ (model + main)
     ├── invest/         index.html · invest.css · js/ (model + growth chart + main)
     ├── runway/         index.html · runway.css · js/ (model + bar + main)
-    └── fi/             index.html · fi.css · js/ (model + accumulation chart + main)
+    ├── fi/             index.html · fi.css · js/ (model + accumulation chart + main)
+    └── debt/           index.html · debt.css · js/ (model + payoff chart + main)
 ```
 
 Three layers, in load order:
@@ -95,6 +97,9 @@ Two parts are worth reading about before changing them:
 - **[Financial independence](docs/financial-independence.md)** — what the
   Trinity Study actually found, why the withdrawal rate is a slider rather
   than a hardcoded 25×, and why the target is drawn as a band.
+- **[The debt payoff model](docs/debt-payoff.md)** — why this tool runs in
+  nominal terms unlike the rest of the suite, the evidence for avalanche vs.
+  snowball, and why cutting the rate is priced as its own lever.
 
 ## Adding a tool
 

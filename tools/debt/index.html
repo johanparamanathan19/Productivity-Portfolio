@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f7d5b" />
+  <meta name="description" content="Enter your debts and charts avalanche vs. snowball payoff paths, with the interest saved in money and life-hours." />
+  <title>Debt Escape Plan — avalanche vs. snowball, charted</title>
+
+  <!-- Apply the saved theme before first paint. See assets/js/theme.js. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('site.theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* storage unavailable — the default theme stands */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="debt.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%9C%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <div class="grain"></div>
+  </div>
+
+  <main class="debt-tool">
+    <header class="topbar">
+      <a class="back-link" href="../../" aria-label="Back to all tools">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span class="mark" aria-hidden="true">🪜</span>
+        <span class="name">Debt Escape Plan</span>
+      </a>
+      <div class="topbar-actions">
+        <label class="sr-only" for="currency">Currency</label>
+        <select id="currency" class="currency-select"></select>
+        <button id="theme-btn" class="icon-btn" title="Change theme" aria-label="Change theme">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <p class="lede">
+      Debt is compounding working against you instead of for you — the same arithmetic as
+      <a href="../invest/">investing</a>, aimed the other way. List what you owe, say what you can put
+      toward it each month, and this charts the two standard payoff orders side by side: highest rate
+      first, which always costs the least, against smallest balance first, which is easier to actually
+      finish.
+    </p>
+
+    <div class="debt-grid">
+      <!-- ---------- Inputs ---------- -->
+      <form class="panel card" id="debt-form" autocomplete="off">
+        <h2 class="panel-title">Before the plan</h2>
+        <ol class="checklist">
+          <li><strong>Stop adding to it.</strong> Every figure below assumes no new spending joins the balances you're paying down.</li>
+          <li><strong>Never miss a minimum.</strong> A missed payment can trigger a default rate far above what you're paying now — this plan pays every minimum before it optimises anything else.</li>
+          <li>
+            <strong>A small buffer first.</strong> Roughly a month of essentials, so the next surprise expense doesn't land straight back on a card.
+            Check with <a href="../runway/">How Long Could I Last?</a>
+          </li>
+          <li>
+            <label class="checklist-check">
+              <input type="checkbox" id="has-match" />
+              <span><strong>Get any employer match first.</strong> A 50–100% instant return usually beats even a brutal APR — tick this if it applies to you.</span>
+            </label>
+          </li>
+        </ol>
+
+        <h2 class="panel-title">Your debts</h2>
+        <ul class="debt-list" id="debt-list"></ul>
+        <button type="button" class="debt-add-btn" id="add-debt-btn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add a debt
+        </button>
+
+        <h2 class="panel-title">Your budget</h2>
+        <div class="field">
+          <label for="budget">Total you can put toward debt each month</label>
+          <input type="number" id="budget" min="0" step="any" inputmode="decimal" placeholder="e.g. 6000" />
+          <p class="hint" id="budget-hint">Your minimums come to 0.</p>
+        </div>
+
+        <div class="field">
+          <label>Which order?</label>
+          <div class="seg" role="radiogroup" aria-label="Payoff strategy" id="strategy-seg">
+            <label class="seg-option">
+              <input type="radio" name="strategy" value="avalanche" checked />
+              <span>Highest rate first</span>
+            </label>
+            <label class="seg-option">
+              <input type="radio" name="strategy" value="snowball" />
+              <span>Smallest balance first</span>
+            </label>
+          </div>
+          <p class="hint">Both are always charted — this just picks which one the figures foreground.</p>
+        </div>
+
+        <h2 class="panel-title">Optional</h2>
+        <div class="field">
+          <label for="wage">Take-home pay per hour <span class="unit">optional</span></label>
+          <input type="number" id="wage" min="0" step="any" inputmode="decimal" placeholder="e.g. 250" />
+          <p class="hint">Turns interest paid into hours of work — see <a href="../time/">How Much Time Do I Spend?</a> to work this out.</p>
+        </div>
+
+        <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn">Clear everything</button>
+      </form>
+
+      <!-- ---------- Results ---------- -->
+      <section class="results" aria-live="polite">
+        <div class="verdict card" id="verdict" data-tone="empty">
+          <span class="verdict-badge" id="verdict-badge">Waiting</span>
+          <h2 class="verdict-headline" id="verdict-headline">Add a debt and a monthly budget to begin</h2>
+          <p class="verdict-sub" id="verdict-sub">Every credit card, loan, or IOU works.</p>
+        </div>
+
+        <!-- Shown when the budget can't cover the minimums: no chart, just the honest number and where to get help. -->
+        <div id="infeasible-body" hidden>
+          <div class="figures" id="infeasible-figures"></div>
+          <h3 class="group-title">What actually helps here</h3>
+          <ul class="guidance" id="infeasible-guidance"></ul>
+        </div>
+
+        <div id="results-body" hidden>
+          <div class="figures" id="figures"></div>
+
+          <h3 class="group-title">Balance remaining over time</h3>
+          <div class="card chart-card">
+            <div class="chart-wrap">
+              <svg id="chart" class="payoff-chart" role="img" aria-labelledby="chart-title"></svg>
+              <p id="chart-title" class="sr-only">
+                Line chart of total debt remaining over time under highest-rate-first and
+                smallest-balance-first payoff orders, with a minimums-only baseline. Full figures are in
+                the table below.
+              </p>
+              <div class="pc-tooltip" id="chart-tooltip" hidden></div>
+            </div>
+            <ul class="pc-legend" id="chart-legend"></ul>
+            <button type="button" class="table-toggle" id="table-toggle" aria-expanded="false" aria-controls="chart-table-wrap">
+              Show the numbers
+            </button>
+            <div class="table-wrap" id="chart-table-wrap" hidden>
+              <table class="pc-table" id="chart-table"></table>
+            </div>
+          </div>
+
+          <h3 class="group-title">Payoff order</h3>
+          <ol class="timeline" id="timeline"></ol>
+
+          <h3 class="group-title">The lever that usually beats the order</h3>
+          <div class="card lever-card">
+            <p class="hint" id="lever-target"></p>
+            <div class="field">
+              <label for="lever-apr">Cut that rate to <strong id="lever-apr-readout">5%</strong></label>
+              <input type="range" id="lever-apr" min="0" max="30" step="0.5" value="5" />
+            </div>
+            <div class="lever-result" id="lever-result">
+              <p class="lever-empty">Add debts and a budget to see what a rate cut is worth.</p>
+            </div>
+          </div>
+
+          <h3 class="group-title">What this means</h3>
+          <ul class="guidance" id="guidance"></ul>
+        </div>
+
+        <p class="disclaimer">
+          Every figure here is nominal — the same units as your statements, not adjusted for inflation,
+          which is a deliberate difference from this site's investing tools. Interest compounds monthly
+          in this model rather than daily, which is close but not exact. This does not recommend any
+          loan, balance transfer, or consolidation product, and it is not financial or credit counselling.
+          Nothing you type leaves your device.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Theme picker -->
+  <div class="modal-backdrop" id="theme-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="theme-title">
+      <div class="modal-head">
+        <h2 id="theme-title">Theme</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="ctrl ctrl-primary text-btn" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

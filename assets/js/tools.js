@@ -72,4 +72,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/fi/',
   },
+  {
+    name: 'Debt Escape Plan',
+    tagline: 'Chart avalanche vs. snowball payoff, and what the difference costs in money and life-hours.',
+    icon: '🪜',
+    tags: ['Money', 'Debt', 'Plan'],
+    status: 'live',
+    href: 'tools/debt/',
+  },
 ];
