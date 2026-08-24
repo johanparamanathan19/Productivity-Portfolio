@@ -80,4 +80,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/debt/',
   },
+  {
+    name: 'Where Am I in the World?',
+    tagline: 'Put your net worth on the global distribution — and see what that number leaves out.',
+    icon: '🌍',
+    tags: ['Money', 'Perspective', 'Data'],
+    status: 'live',
+    href: 'tools/world/',
+  },
 ];

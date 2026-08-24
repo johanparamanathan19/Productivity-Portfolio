@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f7d5b" />
+  <meta name="description" content="Put your net worth on the global wealth distribution: what percentile you are in, how many adults hold less, and what the number does and does not mean." />
+  <title>Where Am I in the World? — your net worth on the global scale</title>
+
+  <!-- Apply the saved theme before first paint. See assets/js/theme.js. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('site.theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* storage unavailable — the default theme stands */ }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="world.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%8D%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <div class="grain"></div>
+  </div>
+
+  <main class="world-tool">
+    <header class="topbar">
+      <a class="back-link" href="../../" aria-label="Back to all tools">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span class="mark" aria-hidden="true">🌍</span>
+        <span class="name">Where Am I in the World?</span>
+      </a>
+      <div class="topbar-actions">
+        <label class="sr-only" for="currency">Currency</label>
+        <select id="currency" class="currency-select"></select>
+        <button id="theme-btn" class="icon-btn" title="Change theme" aria-label="Change theme">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <p class="lede">
+      Global wealth is distributed so unevenly that almost everyone misjudges their own place in it —
+      usually downwards. This puts one number on the published distribution and tells you where it
+      lands. It is a fact about a dataset, not a verdict about you, and the difference matters enough
+      that half this page is about what the number leaves out.
+    </p>
+
+    <div class="world-grid">
+      <!-- ---------- Inputs ---------- -->
+      <form class="panel card" id="world-form" autocomplete="off">
+        <h2 class="panel-title">What are you worth?</h2>
+
+        <div class="field">
+          <label for="net-worth">Your net worth</label>
+          <input type="number" id="net-worth" step="any" inputmode="decimal" placeholder="e.g. 10000000" />
+          <div class="infobox">
+            <span class="infobox-icon" aria-hidden="true">i</span>
+            <p>
+              <strong>Everything you own, minus everything you owe.</strong> Property, pensions,
+              investments, savings and the car — less the mortgage, the loans and the card balances.
+              Not your salary: this is a stock, not a flow. A negative figure is a real answer, and
+              the tool handles it.
+            </p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="checkline" for="household">
+            <input type="checkbox" id="household" />
+            <span>This is a household figure for two adults</span>
+          </label>
+          <p class="hint">The source measures wealth per adult, so a couple's assets are conventionally split. Ticking this halves the figure before ranking it.</p>
+        </div>
+
+        <h2 class="panel-title">The source</h2>
+
+        <div class="sourcebox">
+          <p>
+            Bands come from the <strong>UBS Global Wealth Report</strong>, which continues the Credit
+            Suisse series. The four published tiers cover <strong id="src-adults">—</strong> adults
+            and about <strong id="src-wealth">—</strong> of household wealth.
+          </p>
+          <p>
+            Above USD 1 million the curve is a power law fitted to two published counts — roughly
+            60 million millionaires and 3,000 billionaires. It was checked against two figures it was
+            not built from, predicting about 2.2 million adults over USD 10 million and 81,000 over
+            USD 100 million, against reported values of roughly 2.2–2.5 million and 80,000.
+          </p>
+          <p class="sourcebox-note">
+            Converted at mid-market rates from <strong id="src-rates">—</strong>. Rates drift, but the
+            distribution spans six orders of magnitude, so a few percent of currency movement changes
+            a percentile by a fraction of a point.
+          </p>
+        </div>
+
+        <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn">Clear everything</button>
+      </form>
+
+      <!-- ---------- Results ---------- -->
+      <section class="results" aria-live="polite">
+        <div class="verdict card" id="verdict" data-tone="empty">
+          <span class="verdict-badge" id="verdict-badge">Waiting</span>
+          <h2 class="verdict-headline" id="verdict-headline">Enter a net worth to begin</h2>
+          <p class="verdict-sub" id="verdict-sub">Assets minus debts, in whichever currency you picked above.</p>
+        </div>
+
+        <div id="results-body" hidden>
+          <div class="card hero-card" id="hero-card">
+            <div class="hero-eyebrow">You are in the global</div>
+            <div class="hero-number" id="hero-number">—</div>
+            <div class="hero-label" id="hero-label">by net worth per adult</div>
+            <p class="hero-detail" id="hero-detail"></p>
+            <p class="indicative-note" id="indicative-note" hidden></p>
+          </div>
+
+          <div class="figures" id="figures"></div>
+
+          <h3 class="group-title">The whole distribution</h3>
+          <div class="card chart-card">
+            <div class="chart-wrap">
+              <svg id="chart" class="distribution-chart" role="img" aria-labelledby="chart-title"></svg>
+              <p id="chart-title" class="sr-only">
+                Chart of the global wealth distribution. The horizontal axis is net worth on a
+                logarithmic scale from 100 US dollars to 1 billion; the vertical axis is the share of
+                adults holding less than that amount. Your position is marked. The published bands are
+                shaded behind the curve, and their figures are in the table below.
+              </p>
+              <div class="dc-tooltip" id="chart-tooltip" hidden></div>
+            </div>
+            <ul class="dc-legend" id="chart-legend"></ul>
+            <button type="button" class="table-toggle" id="table-toggle" aria-expanded="false" aria-controls="chart-table-wrap">
+              Show the published bands
+            </button>
+            <div class="table-wrap" id="chart-table-wrap" hidden>
+              <table class="dc-table" id="chart-table"></table>
+            </div>
+          </div>
+
+          <h3 class="group-title" id="milestones-title">What the next rungs cost</h3>
+          <ul class="milestones" id="milestones"></ul>
+
+          <h3 class="group-title">What this number is not</h3>
+          <ul class="guidance" id="guidance"></ul>
+        </div>
+
+        <p class="disclaimer">
+          Net worth is converted at market exchange rates, not purchasing power, which is the
+          convention for wealth and which overstates the gap in living-standard terms: a given sum
+          buys far more in Lagos than in Oslo. The distribution mixes every age together, so a
+          twenty-five-year-old and a sixty-five-year-old with the same balance sheet are treated
+          identically when in reality they are nothing alike. The lower bands are interpolated across
+          a range the source does not break down further. This is a description of a dataset, not
+          financial advice and not a judgement, and nothing you type leaves your device.
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Theme picker -->
+  <div class="modal-backdrop" id="theme-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="theme-title">
+      <div class="modal-head">
+        <h2 id="theme-title">Theme</h2>
+        <button class="icon-btn" data-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+      <div class="modal-foot" style="justify-content:flex-end">
+        <button class="ctrl ctrl-primary text-btn" data-close>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
