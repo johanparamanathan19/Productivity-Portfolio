@@ -27,6 +27,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | 🪂 | **[How Long Could I Last?](tools/runway/)** | Divides your savings by your real monthly burn and shows the answer as months of runway, with a bar and what skipping one purchase is worth |
 | 🏁 | **[When Could I Stop?](tools/fi/)** | Turns a year of spending into a financial independence target from the Trinity Study's 4% rule, charts when you would reach it, and prices what one permanent cut in spending is worth |
 | 🪜 | **[Debt Escape Plan](tools/debt/)** | Charts avalanche vs. snowball payoff for whatever you owe, and prices the interest saved in money and life-hours |
+| 🌍 | **[Where Am I in the World?](tools/world/)** | Places your net worth on the global wealth distribution from the UBS Global Wealth Report, and spends as much space on what the percentile leaves out |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -59,7 +60,8 @@ Then visit <http://localhost:8000>.
     ├── invest/         index.html · invest.css · js/ (model + growth chart + main)
     ├── runway/         index.html · runway.css · js/ (model + bar + main)
     ├── fi/             index.html · fi.css · js/ (model + accumulation chart + main)
-    └── debt/           index.html · debt.css · js/ (model + payoff chart + main)
+    ├── debt/           index.html · debt.css · js/ (model + payoff chart + main)
+    └── world/          index.html · world.css · js/ (model + distribution chart + main)
 ```
 
 Three layers, in load order:
@@ -100,6 +102,10 @@ Two parts are worth reading about before changing them:
 - **[The debt payoff model](docs/debt-payoff.md)** — why this tool runs in
   nominal terms unlike the rest of the suite, the evidence for avalanche vs.
   snowball, and why cutting the rate is priced as its own lever.
+- **[Global wealth distribution](docs/global-wealth.md)** — which four
+  published numbers the percentile rests on, how the top tail was fitted and
+  validated, which parts are interpolated, and why nothing here is
+  colour-coded.
 
 ## Adding a tool
 

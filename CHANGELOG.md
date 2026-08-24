@@ -10,6 +10,14 @@ on `main` — so entries are grouped by date rather than version number.
 
 ### Added
 
+- **Where Am I in the World?** — places a net worth on the global wealth
+  distribution, built on the four published bands of the UBS Global Wealth
+  Report. The tail above USD 1 million is a power law fitted to the millionaire
+  and billionaire counts and validated against two figures it was not built
+  from; the lower bands are interpolated and labelled as such; zero or negative
+  net worth gets the caveats but deliberately no rank. Nothing on the page is
+  colour-coded, because a percentile is a fact about a dataset rather than a
+  grade.
 - **Debt Escape Plan** — enter what you owe and what you can put toward it
   each month; charts highest-rate-first against smallest-balance-first, plus
   a minimums-only baseline, and prices the gap between them in interest,
