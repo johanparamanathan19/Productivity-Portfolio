@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#2f7d5b" />
-  <meta name="description" content="Split a bill between two people by whatever ratio you agree on, keep some items at 100% one person's, and see who owes whom." />
+  <meta name="description" content="Enter a total bill, a split ratio, and whatever was really just one person's — get back exactly what each person pays." />
   <title>How to Split — a bill between two people</title>
 
   <!-- Apply the saved theme before first paint. See assets/js/theme.js. -->
@@ -50,15 +50,14 @@
     </header>
 
     <p class="lede">
-      List what you paid for, say what ratio the two of you split things by — 60/40, not just 50/50 —
-      and mark anything that was really just one person's, in full. Useful for a shared credit card:
-      add every charge as it lands, and this works out who owes whom, down to one payment.
+      Start with the total on the bill, say what ratio you split it by, then set aside whatever was
+      really just one person's — a PS5, a makeup order. Everything else is the shared remainder,
+      split by your ratio; the exceptions are added straight back onto whoever they belong to.
     </p>
 
     <div class="split-grid">
       <!-- ---------- Inputs ---------- -->
       <form class="panel card" id="split-form" autocomplete="off">
-        <h2 class="panel-title">Who's splitting?</h2>
         <div class="names-row">
           <div class="field">
             <label for="name-a">First person</label>
@@ -70,37 +69,28 @@
           </div>
         </div>
 
+        <h2 class="panel-title">The total bill</h2>
         <div class="field">
-          <label>Split ratio for shared items <strong id="ratio-readout">50 / 50</strong></label>
-          <input type="range" id="ratio" min="0" max="100" step="1" value="50" />
-          <p class="hint">Only applies to items marked "split by ratio" below — 100% items ignore this entirely.</p>
+          <label for="total-bill">Everything on it, before anything is set aside</label>
+          <input type="number" id="total-bill" min="0" step="any" inputmode="decimal" placeholder="e.g. 10000" />
         </div>
 
-        <h2 class="panel-title">The items</h2>
+        <h2 class="panel-title">The split</h2>
+        <div class="field">
+          <label>Ratio for whatever's actually shared <strong id="ratio-readout">50 / 50</strong></label>
+          <input type="range" id="ratio" min="0" max="100" step="1" value="50" />
+        </div>
+
+        <h2 class="panel-title">Paid individually</h2>
+        <p class="hint panel-hint">
+          Anything that was really just one person's — it comes straight off the total before the
+          split, and goes straight back onto their bill.
+        </p>
         <ul class="item-list" id="item-list"></ul>
         <button type="button" class="item-add-btn" id="add-item-btn">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add an item
+          Add an individual item
         </button>
-
-        <h2 class="panel-title">Who paid?</h2>
-        <div class="field">
-          <div class="seg seg-3" role="radiogroup" aria-label="Who paid for these" id="paid-seg">
-            <label class="seg-option">
-              <input type="radio" name="paid-by" value="" checked />
-              <span id="paid-label-none">Paid separately</span>
-            </label>
-            <label class="seg-option">
-              <input type="radio" name="paid-by" value="a" />
-              <span id="paid-label-a">A paid</span>
-            </label>
-            <label class="seg-option">
-              <input type="radio" name="paid-by" value="b" />
-              <span id="paid-label-b">B paid</span>
-            </label>
-          </div>
-          <p class="hint">Pick this when it all went on one shared card — it turns each fair share into a single payment.</p>
-        </div>
 
         <button type="button" class="ctrl ctrl-ghost text-btn reset-btn" id="reset-btn">Clear everything</button>
       </form>
@@ -109,12 +99,14 @@
       <section class="results" aria-live="polite">
         <div class="verdict card" id="verdict" data-tone="empty">
           <span class="verdict-badge" id="verdict-badge">Waiting</span>
-          <h2 class="verdict-headline" id="verdict-headline">Add an item to begin</h2>
-          <p class="verdict-sub" id="verdict-sub">Anything from a dinner to a whole shared card works.</p>
+          <h2 class="verdict-headline" id="verdict-headline">Enter the total bill to begin</h2>
+          <p class="verdict-sub" id="verdict-sub">Everything else can stay at its default.</p>
         </div>
 
         <div id="results-body" hidden>
-          <h3 class="group-title">Each share</h3>
+          <div class="figures" id="figures"></div>
+
+          <h3 class="group-title">How that breaks down</h3>
           <div class="card bar-card">
             <div class="split-bar-wrap">
               <div class="split-track" id="split-track">
@@ -126,11 +118,9 @@
             <p class="sr-only" id="split-sr"></p>
           </div>
 
-          <div class="figures" id="figures"></div>
-
-          <h3 class="group-title">Item breakdown</h3>
-          <div class="table-wrap breakdown-wrap">
-            <table class="split-table" id="breakdown-table"></table>
+          <div id="individual-summary-wrap" hidden>
+            <h3 class="group-title">Set aside individually</h3>
+            <ul class="individual-summary" id="individual-summary"></ul>
           </div>
 
           <h3 class="group-title">What this means</h3>
@@ -138,9 +128,9 @@
         </div>
 
         <p class="disclaimer">
-          Amounts are rounded for display; anything under a rounding error is treated as already
-          settled. This does not track whether a payment was actually made — clear the items once
-          you've settled up to start the next round. Nothing you type leaves your device.
+          Amounts are rounded for display. This does not track whether a payment was actually made —
+          clear the items once you've settled up to start the next bill clean. Nothing you type
+          leaves your device.
         </p>
       </section>
     </div>

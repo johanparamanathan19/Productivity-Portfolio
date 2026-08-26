@@ -6,61 +6,62 @@ month-by-month payoff simulation. This one doesn't need any of that: splitting a
 bill between two people is proportional arithmetic, and a tool that tried to be
 cleverer than that would just be worse at the one job it exists for.
 
-## Two people, one ratio, one exception
+## The flow matches how a statement is actually read
 
-Every item is either:
+The first version of this tool asked for a full line-by-line itemisation of the
+bill — every row tagged as shared or 100% one person's. It was wrong, and not
+in a subtle way: nobody re-types their whole grocery run from a statement.
 
-- **shared**, split by one ratio the two people agree on up front — not
-  assumed to be 50/50, because it usually isn't. One person's take-home pay,
-  or whose idea the trip was, or a dozen other reasons make 60/40 the honest
-  number far more often than an even split is.
-- **100% one person's**, ignoring the ratio entirely.
+What people actually have is a total, a ratio they already split by, and a
+short list of exceptions — the handful of lines on that statement that were
+never really shared at all. So the tool asks for exactly that, in the order
+you'd naturally arrive at the answer:
 
-That second case is the actual point of this tool. A shared credit card
-collects things that were never shared — a personal subscription, a solo
-lunch, a gift for someone else's family. Forcing those through the same ratio
-as the genuinely shared costs would be wrong on every one of them. So the
-ratio only ever touches items marked "split by ratio"; a 100% item is fully
-whoever it's marked for, and `splitItem()` never blends the two.
+1. **The total bill** — everything on it, before anything gets set aside.
+2. **The split ratio** — 60/40, not assumed to be 50/50, because it usually
+   isn't. One person's income, or whose idea the trip was, makes an uneven
+   split the honest number far more often than an even one is.
+3. **What was paid individually** — a PS5, a makeup order: things that rode
+   the same card but were never anyone's to share.
+4. **The result** — exactly what each person pays, in one line, with the
+   arithmetic that got there laid out underneath it.
 
-There's no per-item ratio override and no third person. Both are real features
-a bigger app would want. Neither is what makes this tool useful — the two
-things above are — so neither is here.
-
-## The settlement is the useful conversion
-
-Fair shares alone are already something (`owedA`, `owedB` — what each person
-should put toward the total). But "sharing a credit card" implies a specific
-shape: one card, all the charges land on it, and at the end you need to know
-who owes whom, not just what everyone's theoretical share is.
-
-`evaluate()` takes an optional `paidBy`. When set, whichever person **didn't**
-front the card owes the other their own fair share, full stop — the payer's
-own share was already covered by paying the bill, so it collapses to one
-transfer:
+## The arithmetic
 
 ```
-paidBy = 'a'  →  B owes A: owedB
-paidBy = 'b'  →  A owes B: owedA
+shared amount = total bill − individual items
+each person's total = their ratio share of the shared amount
+                     + whatever was individually theirs
 ```
 
-This is why the model computes both people's full fair share unconditionally,
-even though only one of the two numbers survives into the settlement — the
-other one is what makes the transfer amount correct rather than just
-"whatever's left," and it's what the legend under the split bar shows on its
-own, independent of who paid.
+`evaluate()` computes both totals unconditionally and returns them alongside
+the shared amount and the individual total, so the results panel can show the
+full derivation — total, minus individuals, times ratio, plus individuals back
+— rather than presenting a final number with no visible working. A reader who
+doesn't trust a calculator's arithmetic should be able to check it by hand from
+what's on screen, the same standard `docs/debt-payoff.md` holds its own
+numbers to.
 
-A settlement below half a cent is treated as no settlement at all
-(`SETTLE_EPSILON`) — the alternative is a UI that occasionally asks someone to
-transfer 0.003 of a currency unit, which is a bug wearing a decimal point.
+Individual items are subtracted from the total and added back **in full**,
+never touched by the ratio at any point — `sharedAmount` is computed before
+the ratio is applied to anything, and an individual item's `owner` field only
+ever feeds directly into that person's final total. There is no path in the
+code where an individual item's amount is multiplied by the ratio.
 
-## Nominal, nothing derived
+## When the numbers don't add up
 
-Every amount is exactly what was typed, in whatever currency is selected —
-there's no time horizon, no growth, nothing to compound. That puts this tool
-closer to `tools/value/`'s plain arithmetic than to `tools/invest/`'s modelling;
-the interesting design decisions here are about what the tool *asks for*, not
-what it computes from the answer.
+If the individual items alone exceed the total bill, there is nothing left to
+split and something above is almost certainly a typo — a bill entered short,
+or an item double-counted. `sharedAmount` clamps to zero rather than going
+negative, and `overAllocated` is returned as its own flag rather than left for
+the UI to infer from a suspicious-looking number.
+
+Critically, the tool doesn't hide the broken state to avoid showing bad
+numbers — it still renders each person's total (now equal to just their own
+individual items, since nothing is shared), still draws the bar, and adds an
+"Over by" figure stating the shortfall directly. The `bad`-tone verdict badge
+and headline carry the warning; the underlying figures stay honest rather than
+disappearing, which would just replace one confusing state with a blanker one.
 
 ## The bar, not a chart
 
@@ -71,8 +72,15 @@ variable (`--fill-a-pct`); the second segment is `flex: 1 1 auto` and simply
 takes whatever's left, so the two segments can never disagree about the total
 regardless of rounding.
 
-Names and amounts are never painted as text on top of the coloured fill. At a
-95/5 split one segment is a five-pixel sliver — nowhere to put a label even if
+The bar plots the **final** amounts (ratio share plus individual items), not
+the raw ratio — at a 60/40 ratio with a lopsided individual item on one side,
+the bar can show 75/25. That's not a bug: the bar's job is to show what each
+person actually owes, and the figures row directly above it already shows the
+ratio separately from the final totals, so nothing here misrepresents what the
+ratio itself was set to.
+
+Names and amounts are never painted as text on top of the coloured fill. A
+segment can be a sliver at a lopsided split — nowhere to put a label even if
 color contrast weren't a concern, and it is one: this reuses the exact
 `--series-a` / `--series-b` palette slots `tools/invest/invest.css` validated,
 including the Lavender override, and `docs/invest-vs-buy.md`'s finding that
@@ -80,29 +88,29 @@ slot 2's orange sits under 3:1 against a light surface applies here exactly as
 it does there. The legend below the bar is the one true source for every name,
 amount, and percentage; the bar itself is illustration, not data.
 
-## Figures, the bar's legend, and the breakdown table don't repeat each other
+## Figures, the bar's legend, and the individual-items summary don't repeat each other
 
 Three places on the results side show numbers, and each was written to answer
-a genuinely different question rather than restate the same fact three times
-— the mistake `docs/debt-payoff.md`'s changelog records fixing once already:
+a genuinely different question rather than restate the same fact three times:
 
+- **The figures row** — the derivation: total bill, what was set aside, what's
+  actually split. A per-**step** view.
 - **The bar's legend** — a per-**person** view: what each of the two people
-  owes in total, with a colour key tying it to the bar.
-- **The figures row** — a per-**category** view: the grand total, how much
-  ran through the shared ratio, how much was 100%-items, and the settlement
-  transfer if there is one. None of these numbers appear in the legend.
-- **The breakdown table** — a per-**item** view: every line, its split, and
-  what it contributed to each person's total. This is the only place a single
-  item's own numbers are visible, and it's always shown rather than hidden
-  behind a toggle — a bill split rarely has enough lines to need one.
+  pays in total, with a colour key tying it to the bar.
+- **The individual-items summary** — a per-**item** view: exactly what was set
+  aside and who it belongs to, so a reader can double-check the one part of
+  the input that isn't a single number.
+
+None of the three shows a figure either of the others already shows.
 
 ## What it deliberately doesn't do
 
-No more than two people — a third person turns "one ratio" into a genuinely
-different problem (whose ratio, split against whom), and this tool would need
-a redesign, not an extra field, to do that honestly. No history and no concept
-of "already paid" — it computes the answer for whatever's currently listed and
-trusts the two people to actually make the transfer; clearing the list and
-starting over is the reset for a new round, not a bug. And it never guesses a
-ratio — 50/50 is the default because it's the least assumption, not because
-it's usually right.
+No line-by-line itemisation of the whole bill — see above for why that was
+tried and reverted. No more than two people — a third person turns "one
+ratio" into a genuinely different problem that this tool would need a
+redesign, not an extra field, to handle honestly. No tracking of who actually
+holds the card or whether a transfer has happened — it computes what each
+person owes for whatever's currently entered and trusts the two people to
+settle it; clearing the form is the reset for the next bill, not a bug. And it
+never guesses a ratio — 50/50 is the default because it's the least
+assumption, not because it's usually right.
