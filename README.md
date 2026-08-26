@@ -28,6 +28,7 @@ No framework · no build step · no tracking · nothing leaves your device
 | 🏁 | **[When Could I Stop?](tools/fi/)** | Turns a year of spending into a financial independence target from the Trinity Study's 4% rule, charts when you would reach it, and prices what one permanent cut in spending is worth |
 | 🪜 | **[Debt Escape Plan](tools/debt/)** | Charts avalanche vs. snowball payoff for whatever you owe, and prices the interest saved in money and life-hours |
 | 🌍 | **[Where Am I in the World?](tools/world/)** | Places your net worth on the global wealth distribution from the UBS Global Wealth Report, and spends as much space on what the percentile leaves out |
+| 🧾 | **[How to Split](tools/split/)** | Splits a bill between two people by whatever ratio you agree on, keeps some items at 100% one person's, and works out who owes whom |
 
 Every tool stores its data in `localStorage`. There is no backend, no account,
 and no analytics — see [SECURITY.md](SECURITY.md) for what that means in practice.
@@ -61,7 +62,8 @@ Then visit <http://localhost:8000>.
     ├── runway/         index.html · runway.css · js/ (model + bar + main)
     ├── fi/             index.html · fi.css · js/ (model + accumulation chart + main)
     ├── debt/           index.html · debt.css · js/ (model + payoff chart + main)
-    └── world/          index.html · world.css · js/ (model + distribution chart + main)
+    ├── world/          index.html · world.css · js/ (model + distribution chart + main)
+    └── split/          index.html · split.css · js/ (model + split bar + main)
 ```
 
 Three layers, in load order:
@@ -106,6 +108,10 @@ Two parts are worth reading about before changing them:
   published numbers the percentile rests on, how the top tail was fitted and
   validated, which parts are interpolated, and why nothing here is
   colour-coded.
+- **[How to Split](docs/how-to-split.md)** — why a 100%-item ignores the ratio
+  entirely, how the settlement collapses two fair shares into one transfer,
+  and why the figures, the bar's legend, and the breakdown table were each
+  written to answer a different question instead of repeating one number.
 
 ## Adding a tool
 

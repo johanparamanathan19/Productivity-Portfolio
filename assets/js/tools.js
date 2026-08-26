@@ -88,4 +88,12 @@ export const TOOLS = [
     status: 'live',
     href: 'tools/world/',
   },
+  {
+    name: 'How to Split',
+    tagline: 'Split a bill by whatever ratio you agree on, keep some items at 100%, and see who owes whom.',
+    icon: '🧾',
+    tags: ['Money', 'Sharing', 'Decisions'],
+    status: 'live',
+    href: 'tools/split/',
+  },
 ];

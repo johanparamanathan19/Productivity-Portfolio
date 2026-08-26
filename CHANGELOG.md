@@ -10,6 +10,11 @@ on `main` — so entries are grouped by date rather than version number.
 
 ### Added
 
+- **How to Split** — splits a bill between two people by a custom ratio
+  (60/40, not just 50/50), with any item markable as 100% one person's so it
+  bypasses the ratio entirely. When one person paid the whole card, the two
+  fair shares collapse into a single settlement transfer instead of two
+  separate figures.
 - **Where Am I in the World?** — places a net worth on the global wealth
   distribution, built on the four published bands of the UBS Global Wealth
   Report. The tail above USD 1 million is a power law fitted to the millionaire
